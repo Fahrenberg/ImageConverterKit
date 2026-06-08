@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.10
 
 import PackageDescription
 
@@ -13,15 +13,24 @@ let package = Package(
     ],
     
     dependencies: [
-         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.1.0"),
-         .package(url: "https://github.com/Fahrenberg/Extensions.git", from: "5.0.0")
+        .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.1.0"),
+        .package(url: "https://github.com/Fahrenberg/Extensions.git", from: "5.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
+        .executableTarget(
+            name: "Spikes",
+            dependencies: ["ImageCompressionKit", "Extensions"],
+            path: "Spikes",
+            resources: [
+                .process("Ressources"),
+            ]
+        ),
         .target(
             name: "ImageCompressionKit",
-            dependencies: ["Extensions"]),
+            dependencies: ["Extensions"]
+        ),
         .testTarget(
             name: "ImageCompressionKitTests",
             dependencies: [
@@ -29,9 +38,9 @@ let package = Package(
                 "CollectionConcurrencyKit"
             ],
             resources: [
-//                .process("Images.xcassets"),
+                //                .process("Images.xcassets"),
                 .process("TestRessources")
             ]
-        )
+        ),
     ]
 )
