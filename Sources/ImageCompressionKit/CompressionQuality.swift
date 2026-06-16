@@ -12,6 +12,8 @@ import UIKit
 #elseif canImport(AppKit)
 import AppKit
 #endif
+import Extensions
+
 
 extension PlatformImage {
     /// HEIC Image Compression (more efficient, slower)

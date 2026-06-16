@@ -10,6 +10,7 @@ import UIKit
 #elseif canImport(AppKit)
 import AppKit
 #endif
+import Extensions
 
 extension PlatformImage {
     public enum ImageAlignment {

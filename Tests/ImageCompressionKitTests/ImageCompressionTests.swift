@@ -186,7 +186,7 @@ final class ImageCompressionTests: XCTestCase {
             }
         }
     #elseif canImport(AppKit)
-        class MockImage: NSImage {
+        final class MockImage: NSImage, @unchecked Sendable {
             override func cgImage(
                 forProposedRect proposedRect: UnsafeMutablePointer<NSRect>?,
                 context: NSGraphicsContext?,
