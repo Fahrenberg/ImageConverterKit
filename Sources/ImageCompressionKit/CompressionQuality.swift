@@ -22,7 +22,7 @@ extension PlatformImage {
     public func heicDataCompression(compressionQuality: CGFloat) -> Data? {
         // Ensure compressionQuality is between 0 and 1
         let quality = min(max(compressionQuality, 0), 1)
-        // 1.0 equals no compression
+        // 1.0 equals no compression, return pngData()
         //  HEVC Codec Design: The HEVC (H.265) codec, underlying HEIC, optimizes for high compression efficiency rather than supporting true lossless encoding. Setting the compression factor to 1.0 essentially requests a lossless image, but HEVC isn't designed for this mode in most implementations, causing the encoding operation to fail
         //
         guard quality != 1.0 else {
@@ -81,3 +81,5 @@ extension PlatformImage {
     }
     #endif
 }
+
+
