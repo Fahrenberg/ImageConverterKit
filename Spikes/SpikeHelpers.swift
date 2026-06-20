@@ -27,10 +27,4 @@ func readTestDataURL(filename: String) throws -> URL {
     }
     return imageURL
 }
-extension PlatformImage {
-    /// Convert image to HEIC data
-    var makeHEICData: Data? {
-        // if heic do nothing!
-        return self.heicDataCompression(compressionQuality: 0.75)
-    }
-}
+
