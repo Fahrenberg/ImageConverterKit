@@ -10,8 +10,15 @@ import OSLog
 import Extensions
 
 @testable import ImageCompressionKit
-import XCTest
 
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
+
+
+import Testing
 
 extension Logger {
     static let subsystem = "\(Bundle.main.bundleIdentifier!)"
@@ -47,21 +54,50 @@ struct TestImage {
         return NSImage(contentsOf: imageURL)
         #endif
     }
-}
-
-
-final class BundleImageTests: XCTestCase {
-    func testAccessToImages() {
-        let largeImage = TestImage.image(size: .large)
-        XCTAssertNotNil(largeImage)
-        Logger.test.info("largeImage  size: \(largeImage?.sizeDescription ?? "nil", privacy: .public)")
-
-        let mediumImage = TestImage.image(size: .medium)
-        XCTAssertNotNil(mediumImage)
-        Logger.test.info("mediumImage size: \(mediumImage?.sizeDescription ?? "nil", privacy: .public)")
-
-        let smallImage = TestImage.image(size: .small)
-        XCTAssertNotNil(smallImage)
-        Logger.test.info("smallImage  size: \(smallImage?.sizeDescription ?? "nil", privacy: .public)")
+    
+    static func data(size type: ImageType) -> Data? {
+        let bundle = Bundle.module
+        guard let imageURL = bundle.url(forResource: type.rawValue, withExtension: "bmp") else {
+            return nil
+        }
+        let data = try? Data(contentsOf: imageURL)
+        return data
     }
 }
+
+struct TestImageAccess {
+    
+    @Test func testAccessToPlatformImage() {
+        let largeImage = TestImage.image(size: .large)
+        #expect(largeImage != nil)
+        Logger.test.info("largeImage  size: \(largeImage?.sizeDescription ?? "nil", privacy: .public)")
+        
+        let mediumImage = TestImage.image(size: .medium)
+        #expect(mediumImage != nil)
+        Logger.test.info("mediumImage size: \(mediumImage?.sizeDescription ?? "nil", privacy: .public)")
+        
+        let smallImage = TestImage.image(size: .small)
+        #expect(smallImage != nil)
+        Logger.test.info("smallImage  size: \(smallImage?.sizeDescription ?? "nil", privacy: .public)")
+    }
+    
+    @Test func testLargeImageData() {
+        let largeData = TestImage.data(size: .large)
+        Logger.test.info("LargeData : \(largeData?.count.outputKBytes ?? "nil")")
+        #expect(largeData != nil && largeData!.count == 20868670)
+    }
+    
+    @Test func testMediumImageData() {
+        let mediumData = TestImage.data(size: .medium)
+        Logger.test.info("MediumData : \(mediumData?.count.outputKBytes ?? "nil")")
+        #expect(mediumData != nil && mediumData!.count == 1747579)
+    }
+    
+    @Test func testSmallImageData() {
+        let smallData = TestImage.data(size: .small)
+        Logger.test.info("SmallData : \(smallData?.count.outputKBytes ?? "nil")")
+        #expect(smallData != nil && smallData!.count == 384471)
+    }
+    
+}
+
