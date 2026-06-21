@@ -12,25 +12,7 @@ import ImageIO
 import Extensions
 import ImageCompressionKit
 
-func imageType(for data: Data) -> UTType? {
-    guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-          let type = CGImageSourceGetType(source),
-          let utType = UTType(type as String)
-    else {
-        return nil
-    }
 
-    return utType.conforms(to: .image) ? utType : nil
-}
-
-func isHEICData(_ data: Data) -> Bool {
-    guard let utImageType = imageType(for: data)
-    else { return false}
-
-    return
-        utImageType.conforms(to: .heic) == true ||
-        utImageType.conforms(to: .heif) == true
-}
 
 
 
@@ -47,8 +29,29 @@ func isHEICData(_ data: Data) -> Bool {
    
     for filename in filenames {
         let data: Data = try readTestData(filename: filename)
-        let imageType = imageType(for: data)
-        let heicImage = isHEICData(data)
+        let _ = data.isImage
+        let _ = data.isHEICImage
     }
+    
+}
+
+#Playground("Image Dimension") {
+    let filename = "JPG-Large.jpg"
+    guard let originalData: Data = try? readTestData(filename: filename),
+          let originalSource = try CGImageSourceCreateWithData(originalData as CFData, nil),
+          let originalImage = try
+        CGImageSourceCreateImageAtIndex(originalSource, 0, nil)
+    else { return  }
+    _ = originalImage.width
+    _ = originalImage.height
+    
+    let heicData = ImageCompressor.heicData(from: originalData)
+    guard let heicData: Data = try? readTestData(filename: filename),
+          let heicSource = try CGImageSourceCreateWithData(heicData as CFData, nil),
+          let heicImage = try
+        CGImageSourceCreateImageAtIndex(heicSource, 0, nil)
+    else { return  }
+    _ = heicImage.width
+    _ = heicImage.height
     
 }

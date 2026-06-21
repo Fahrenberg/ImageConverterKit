@@ -81,22 +81,22 @@ struct TestImageAccess {
         Logger.test.info("smallImage  size: \(smallImage?.sizeDescription ?? "nil", privacy: .public)")
     }
     
-    @Test func testLargeImageData() {
-        let largeData = TestImage.data(size: .large)
-        Logger.test.info("LargeData : \(largeData?.count.outputKBytes ?? "nil")")
-        #expect(largeData != nil && largeData!.count == 20868670)
+    @Test func testLargeImageData() throws {
+        let largeData = try #require(TestImage.data(size: .large))
+        Logger.test.info("LargeData HEIC? \(largeData.isHEICImage): \(largeData.count.outputKBytes)")
+        #expect(largeData.count == 20868670)
     }
     
-    @Test func testMediumImageData() {
-        let mediumData = TestImage.data(size: .medium)
-        Logger.test.info("MediumData : \(mediumData?.count.outputKBytes ?? "nil")")
-        #expect(mediumData != nil && mediumData!.count == 1747579)
+    @Test func testMediumImageData() throws {
+        let mediumData = try #require(TestImage.data(size: .medium))
+        Logger.test.info("MediumData HEIC? \(mediumData.isHEICImage): \(mediumData.count.outputKBytes)")
+        #expect(mediumData.count == 1747579)
     }
     
-    @Test func testSmallImageData() {
-        let smallData = TestImage.data(size: .small)
-        Logger.test.info("SmallData : \(smallData?.count.outputKBytes ?? "nil")")
-        #expect(smallData != nil && smallData!.count == 384471)
+    @Test func testSmallImageData() throws {
+        let smallData = try #require(TestImage.data(size: .small))
+        Logger.test.info("SmallData HEIC? \(smallData.isHEICImage): \(smallData.count.outputKBytes)")
+        #expect(smallData.count == 384471)
     }
     
 }
