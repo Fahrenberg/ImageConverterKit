@@ -26,7 +26,7 @@ public enum ImageCompressor {
 
     public static func jpegData(
         from imageData: Data,
-        compressionQuality: CGFloat = 0.75
+        compressionQuality: CGFloat = 0.65
     ) -> Data? {
         compressedData(
             from: imageData,
