@@ -77,7 +77,7 @@ final class ImageCompressionPerformanceTests: XCTestCase {
         let images = Array(repeating: image, count: 4)
         
         self.measure(options: measureOnlyOnce) { // 0.104 sec
-            let expectation = XCTestExpectation(description: "Concurrent HEIC compression completed")
+            let expectation = XCTestExpectation(description: "Concurrent JPG compression completed")
 
             Task {
                 await images.concurrentForEach { image in
