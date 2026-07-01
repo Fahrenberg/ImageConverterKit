@@ -38,18 +38,16 @@ import ImageCompressionKit
 #Playground("Image Dimension") {
     let filename = "JPG-Large.jpg"
     guard let originalData: Data = try? readTestData(filename: filename),
-          let originalSource = try CGImageSourceCreateWithData(originalData as CFData, nil),
-          let originalImage = try
-        CGImageSourceCreateImageAtIndex(originalSource, 0, nil)
+          let originalSource = CGImageSourceCreateWithData(originalData as CFData, nil),
+          let originalImage =  CGImageSourceCreateImageAtIndex(originalSource, 0, nil)
     else { return  }
     _ = originalImage.width
     _ = originalImage.height
     
-    let heicData = ImageCompressor.heicData(from: originalData)
-    guard let heicData: Data = try? readTestData(filename: filename),
-          let heicSource = try CGImageSourceCreateWithData(heicData as CFData, nil),
-          let heicImage = try
-        CGImageSourceCreateImageAtIndex(heicSource, 0, nil)
+   
+    guard let heicData = ImageCompressor.heicData(from: originalData),
+          let heicSource = CGImageSourceCreateWithData(heicData as CFData, nil),
+          let heicImage =  CGImageSourceCreateImageAtIndex(heicSource, 0, nil)
     else { return  }
     _ = heicImage.width
     _ = heicImage.height
