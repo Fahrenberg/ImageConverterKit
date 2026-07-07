@@ -9,27 +9,38 @@ import ImageIO
 import UniformTypeIdentifiers
 
 extension Data {
-    public var isImage: Bool {
-           imageType != nil
-       }
-
-    public var isHEICImage: Bool {
-        guard let imageType else { return false }
-
-        return imageType.conforms(to: .heic)
-            || imageType.conforms(to: .heif)
-    }
-    
-    private var imageType: UTType? {
+    public var imageType: UTType? {
         guard
             let source = CGImageSourceCreateWithData(self as CFData, nil),
             let type = CGImageSourceGetType(source),
             let utType = UTType(type as String),
-            utType.conforms(to: .image)
+            utType.isImage
         else {
             return nil
         }
 
         return utType
+    }
+
+    public var isImage: Bool {
+        imageType != nil
+    }
+}
+
+extension UTType {
+    public var isImage: Bool {
+        conforms(to: .image)
+    }
+
+    public var isHEICImage: Bool {
+        conforms(to: .heic) || conforms(to: .heif)
+    }
+
+    public var isJPGImage: Bool {
+        conforms(to: .jpeg)
+    }
+
+    public var isPNGImage: Bool {
+        conforms(to: .png)
     }
 }
