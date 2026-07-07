@@ -5,18 +5,55 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/Fahrenberg/ImageCompressionKit)
 
 
-## ImageCompressor
+## Data Image Compressor
 
-Compresses image `Data` using device/platfrom independent ImageIO.
+Converts and compresses image `Data` using device/platform independent ImageIO.
 
 | Compression<br> Method | Default<br> Compression<br> Quality | Usage |
 | ------------------ | :------------------------------: | ----- |
 | HEIC | `0.75` | `.heicData(from: imageData)` |
 | JPEG | `0.65` | `.jpegData(from: imageData)` |
+| PNG | `none` | `.pngData(from: imageData)` |
 
 Notes:
 - The default HEIC compression quality (`0.75`) matches the behavior of the native `UIImage.heicData()` API introduced in iOS 17.
 - Use HEIC only with [supported devices for HEIC](https://support.apple.com/en-us/HT207022). Very efficient but slower to compress than jpg.
+
+- HEIC and JPEG allow to overwrite default compression quality with:
+````
+.heicData(from imageData,compressionQuality: Double)
+.jpegData(from imageData,compressionQuality: Double)
+````
+## Image Data Checks
+#### `Data.imageType`
+
+Returns the image `UTType` if the `Data` contains a supported image; otherwise returns `nil`.
+
+See Apple's [system-declared image UTTypes](https://developer.apple.com/documentation/uniformtypeidentifiers/uttype-swift.struct/image) for the supported image formats such as JPEG, PNG, HEIC, GIF, TIFF, and RAW.
+
+```swift
+extension Data {
+    public var imageType: UTType?
+}
+````
+
+#### `UTType` 
+
+Convenience wrappers to check different image formats, based on UTType
+
+````
+extension UTType {
+    public var isImage: Bool 
+    public var isHEICImage: Bool 
+    public var isJPGImage: Bool
+    public var isPNGImage: Bool
+}
+````
+
+#### Usage example:
+`````
+#expect(heicCompressedData.imageType?.isHEICImage == true)
+`````
 
 ## PlatformImage+Compression
 
