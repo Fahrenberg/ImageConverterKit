@@ -20,19 +20,15 @@ import UIKit
 
 #Playground {
     
-    for filename in filenames {
-        guard let imageData = try? readTestData(filename: filename) else {
-            print("nil")
-            return
-        }
-        
-       
-        
-        
-        _ = imageData.count
-        _  = ImageCompressor.heicData(from: imageData, compressionQuality:  1.0)?.count
-        
-    }
+    let filename = filenames[3]
+    let imageData = try readTestData(filename: filename)
+    _ = imageData.count.outputKBytes
+    _ = UIImage(data: imageData)
+    
+    guard let compressedImageData = ImageCompressor.heicData(from: imageData,compressionQuality: 0)
+    else { return }
+    _ = compressedImageData.count.outputKBytes
+    _ = UIImage(data: compressedImageData)
     
 }
 

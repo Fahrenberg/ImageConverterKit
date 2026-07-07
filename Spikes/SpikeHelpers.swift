@@ -8,6 +8,16 @@
 import Foundation
 import Extensions
 
+let filenames = [
+ "HEIC-Scan.heic",
+ "JPG-Scan.jpg",
+ "PNG-Scan-1.png",
+ "JPG-Large.jpg",
+ "TIFF.tif",
+ "Sample-Word-DOC.docx",
+ "SamplePDF.pdf"
+]
+
 
 func readTestData(filename: String) throws -> Data {
         guard let imageURL = try? readTestDataURL(filename: filename) else {

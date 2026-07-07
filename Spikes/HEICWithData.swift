@@ -30,7 +30,7 @@ import ImageCompressionKit
     for filename in filenames {
         let data: Data = try readTestData(filename: filename)
         let _ = data.isImage
-        let _ = data.isHEICImage
+        let _ = data.imageType?.isHEICImage
     }
     
 }
