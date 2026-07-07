@@ -83,19 +83,22 @@ struct TestImageAccess {
     
     @Test func testLargeImageData() throws {
         let largeData = try #require(TestImage.data(size: .large))
-        Logger.test.info("LargeData HEIC? \(largeData.isHEICImage): \(largeData.count.outputKBytes)")
+        let imageType = largeData.imageType?.isHEICImage ?? false ? "YES" : "NO/nil"
+        Logger.test.info("LargeData HEIC? \(imageType): \(largeData.count.outputKBytes)")
         #expect(largeData.count == 20868670)
     }
     
     @Test func testMediumImageData() throws {
         let mediumData = try #require(TestImage.data(size: .medium))
-        Logger.test.info("MediumData HEIC? \(mediumData.isHEICImage): \(mediumData.count.outputKBytes)")
+        let imageType = mediumData.imageType?.isHEICImage ?? false ? "YES" : "NO/nil"
+        Logger.test.info("MediumData HEIC? \(imageType): \(mediumData.count.outputKBytes)")
         #expect(mediumData.count == 1747579)
     }
     
     @Test func testSmallImageData() throws {
         let smallData = try #require(TestImage.data(size: .small))
-        Logger.test.info("SmallData HEIC? \(smallData.isHEICImage): \(smallData.count.outputKBytes)")
+        let imageType = smallData.imageType?.isHEICImage ?? false ? "YES" : "NO/nil"
+        Logger.test.info("SmallData HEIC? \(imageType): \(smallData.count.outputKBytes)")
         #expect(smallData.count == 384471)
     }
     
