@@ -15,7 +15,7 @@ import Playgrounds
 import ImageCompressionKit
 
 
-import UIKit
+import Extensions
 
 
 #Playground {
@@ -23,12 +23,12 @@ import UIKit
     let filename = filenames[3]
     let imageData = try readTestData(filename: filename)
     _ = imageData.count.outputKBytes
-    _ = UIImage(data: imageData)
+    _ = PlatformImage(data: imageData)
     
     guard let compressedImageData = ImageCompressor.heicData(from: imageData,compressionQuality: 0)
     else { return }
     _ = compressedImageData.count.outputKBytes
-    _ = UIImage(data: compressedImageData)
+    _ = PlatformImage(data: compressedImageData)
     
 }
 
