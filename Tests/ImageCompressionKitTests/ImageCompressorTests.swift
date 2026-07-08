@@ -151,7 +151,7 @@ struct JPEGImageCompressorTests {
     
 }
 
-struct pngImageConversionTests {
+struct PNGImageConversionTests {
     @Test func pngConversionToDecodablePNG() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
