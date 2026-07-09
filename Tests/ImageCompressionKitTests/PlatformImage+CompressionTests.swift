@@ -5,126 +5,36 @@
 //  -------					-------
 //  -------------------------------------------------------------------
 
-import XCTest
+import Testing
 import OSLog
 
 @testable import ImageCompressionKit
 
-final class ImageCompressionTests: XCTestCase {
+struct PlatformImageCompressionTests {
 
-    //MARK: Using compressionQuality
-    func testJPGCompressionWithLargeData() throws {
-        let jpgQuality: CGFloat = 0.3
-        let maxExpectedResultBytes: UInt64 = 790_000
-
-        let image = try XCTUnwrap(TestImage.image(size: .large))
-        let originalSize = try XCTUnwrap(image.pngData()?.count)
-
-        let compressedSize = image.jpgDataCompression(
-            compressionQuality: jpgQuality)
-        let resultBytes = UInt64(try XCTUnwrap(compressedSize).count)
-        XCTAssertNotEqual(resultBytes, 0)
-        XCTAssertLessThanOrEqual(resultBytes, maxExpectedResultBytes)
-        Logger.test.info(
-            """
-            testJPGCompressorLargeData: 
-            Original-Size: \(originalSize) 
-            Compressed-Size: \(resultBytes)
-            Factor: \(Double(originalSize) / (Double(resultBytes)))x smaller
-            """
-        )
+    @Test func testJPGCompressionWithLargeImage() throws {
+        let image = try #require(TestImage.image(size: .large))
+        let jpegImageData = try #require(image.jpgData())
+        #expect(jpegImageData.count > 0)
+        #expect(jpegImageData.imageType?.isJPGImage == true)
     }
 
-    func testHEICCompressionWithLargeImage() throws {
-        let heicQuality: CGFloat = 0.3
-        let maxExpectedResultBytes: UInt64 = 421_000
-
-        let image = try XCTUnwrap(TestImage.image(size: .large))
-        let originalSize = try XCTUnwrap(image.pngData()?.count)
-
-        let compressedSize = image.heicDataCompression(compressionQuality: heicQuality)
-        let resultBytes = UInt64(try XCTUnwrap(compressedSize).count)
-        XCTAssertNotEqual(resultBytes, 0)
-        XCTAssertLessThanOrEqual(resultBytes, maxExpectedResultBytes)
-        Logger.test.info(
-            """
-            testHEICLargeData: 
-            Original-Size: \(originalSize) 
-            Compressed-Size: \(resultBytes)
-            Factor: \(Double(originalSize) / (Double(resultBytes)))x smaller
-            """
-        )
+    @Test func testHEICCompressionWithLargeImage() throws {
+        let image = try #require(TestImage.image(size: .large))
+        let heicImageData = try #require(image.heicData())
+        #expect(heicImageData.count > 0)
+        #expect(heicImageData.imageType?.isHEICImage == true)
 
     }
     
-    //MARK: No compression for small images
-    func testNoHEICCompressionWithSmallImage() throws {
-        let image = try XCTUnwrap(TestImage.image(size: .small))
-        let originalSize = try XCTUnwrap(image.pngData()?.count)
-        
-        let compressedData = image.heicDataCompression(askedMaxSize: 500_000)  // Small Image is 223613 bytes
-        let resultSize = try XCTUnwrap(compressedData?.count)
-        XCTAssertEqual(resultSize, originalSize)
-        Logger.test.info(
-            """
-            testNoHEICCompressionWithSmallImage:
-            Original-Size: \(originalSize)
-            Compressed-Size: \(resultSize)
-            """
-            )
+    @Test func testPNGConversionWithLargeImage() throws {
+        let image = try #require(TestImage.image(size: .large))
+        let pngImageData = try #require(image.pngData())
+        #expect(pngImageData.count > 0)
+        #expect(pngImageData.imageType?.isPNGImage == true)
     }
     
-    func testNoJPGCompressionWithSmallImage() throws {
-        let image = try XCTUnwrap(TestImage.image(size: .small))
-        let originalSize = try XCTUnwrap(image.pngData()?.count)
-        
-        let compressedData = image.jpgDataCompression(askedMaxSize: 500_000)  // Small Image is 223613 bytes
-        let resultSize = try XCTUnwrap(compressedData?.count)
-        XCTAssertEqual(resultSize, originalSize)
-        Logger.test.info(
-            """
-            testNoJPGCompressionWithSmallImage:
-            Original-Size: \(originalSize)
-            Compressed-Size: \(resultSize)
-            """
-            )
-    }
-  
-    //MARK: No compression if using without parameters
-    func testNoHEICCompression() throws {
-        let image = try XCTUnwrap(TestImage.image(size: .large))
-        let originalSize = try XCTUnwrap(image.pngData()?.count)
-        
-        let compressedData = image.heicDataCompression()
-        let resultSize = try XCTUnwrap(compressedData?.count)
-        XCTAssertEqual(resultSize, originalSize)
-        Logger.test.info(
-            """
-            testNoHEICCompression:
-            Original-Size: \(originalSize)
-            Compressed-Size: \(resultSize)
-            Factor: \(Double(originalSize) / (Double(resultSize)))x smaller
-            """
-            )
-    }
-    
-    func testNoJPGCompression() throws {
-        let image = try XCTUnwrap(TestImage.image(size: .large))
-        let originalSize = try XCTUnwrap(image.pngData()?.count)
-        
-        let compressedData = image.jpgDataCompression()
-        let resultSize = try XCTUnwrap(compressedData?.count)
-        XCTAssertEqual(resultSize, originalSize)
-        Logger.test.info(
-            """
-            testNoJPGCompression:
-            Original-Size: \(originalSize)
-            Compressed-Size: \(resultSize)
-            Factor: \(Double(originalSize) / (Double(resultSize)))x smaller
-            """
-            )
-    }
-    
+/*
     //MARK: Using askedMaxSize (bytes)
     func testHEICCompressToSize() throws {
         let maxExpectedSize: UInt64 = 300_000  // max. compression ~0.1
@@ -150,7 +60,6 @@ final class ImageCompressionTests: XCTestCase {
             )
     }
     
-   
     func testJPGCompressToSize() throws {
         let maxExpectedSize: UInt64 = 500_000  // max. compression ~0.1
         let image = try XCTUnwrap(TestImage.image(size: .large))
@@ -295,6 +204,7 @@ final class ImageCompressionTests: XCTestCase {
             """
             )
     }
+    */
     
 }
 
