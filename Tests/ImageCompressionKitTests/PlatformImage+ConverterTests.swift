@@ -18,7 +18,6 @@ struct PlatformImageCompressionTests {
         let heicImageData = try #require(image.heicData())
         #expect(heicImageData.count > 0)
         #expect(heicImageData.imageType?.isHEICImage == true)
-
     }
 
     @Test func testJPGCompressionWithLargeImage() throws {

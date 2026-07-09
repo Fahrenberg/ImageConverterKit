@@ -65,7 +65,7 @@ public enum ImageConverter {
     ///     for lossless formats such as PNG.
     /// - Returns: The converted image data, or `nil` if the image could not be
     ///   decoded or encoded.
-    private static func convertData(
+    internal static func convertData(
         from imageData: Data,
         type: CFString,
         compressionQuality: CGFloat? = nil
@@ -102,7 +102,7 @@ public enum ImageConverter {
         return output as Data
     }
     
-    private static func shouldRemoveAlpha(for type: CFString) -> Bool {
+    internal static func shouldRemoveAlpha(for type: CFString) -> Bool {
         switch type as String {
         case UTType.jpeg.identifier,
             UTType.heic.identifier,
@@ -112,6 +112,38 @@ public enum ImageConverter {
             return false
         }
     }
+    
+    internal static func convertData(
+        from cgImage: CGImage,
+        type: CFString,
+        compressionQuality: CGFloat? = nil
+    ) -> Data? {
+        
+        let image: CGImage = shouldRemoveAlpha(for: type)
+            ? (cgImage.removingAlphaIfNeeded() ?? cgImage)
+            : cgImage
+
+
+
+        let output = NSMutableData()
+
+        guard let destination = CGImageDestinationCreateWithData(output, type, 1, nil) else {
+            return nil
+        }
+
+        let options: NSDictionary? = compressionQuality.map {
+            [kCGImageDestinationLossyCompressionQuality: min(max($0, 0), 1)]
+        }
+
+        CGImageDestinationAddImage(destination, image, options)
+
+        guard CGImageDestinationFinalize(destination) else {
+            return nil
+        }
+
+        return output as Data
+    }
+    
 }
 
 private extension CGImage {

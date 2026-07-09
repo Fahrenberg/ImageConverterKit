@@ -8,21 +8,27 @@
 
 import OSLog
 import Extensions
-
+import ImageIO
+import UniformTypeIdentifiers
 
 extension PlatformImage {
     /// HEIC Image Compression (more efficient, slower)
     ///
     /// Use it only with [supported devices for HEIC](https://support.apple.com/en-us/HT207022)
     public func heicData(compressionQuality: CGFloat? = nil) -> Data? {
-       let data = Data()
-
-        return data
+        guard let cgImage = self.platformCGImage,
+              let data = ImageConverter.convertData(from: cgImage, type: UTType.png.identifier as CFString ),
+              let heicData = ImageConverter.heicData(from: data)
+        else { return nil }
+        return heicData
     }
 
     public func jpgData(compressionQuality: CGFloat? = nil) -> Data? {
-        let data = Data()
-        return data
+        guard let cgImage = self.platformCGImage,
+              let data = ImageConverter.convertData(from: cgImage, type: UTType.png.identifier as CFString ),
+              let jpegData = ImageConverter.jpegData(from: data)
+        else { return nil }
+        return jpegData
     }
     
     // Extensions offers an pngData() converter, remove first from Extension
@@ -31,6 +37,20 @@ extension PlatformImage {
 //        return data
 //    }
 }
+
+private extension PlatformImage {
+    /// Adapter to return an CGImage for all apple platforms
+    var platformCGImage: CGImage? {
+        #if canImport(UIKit)
+        cgImage
+        #elseif canImport(AppKit)
+        cgImage(forProposedRect: nil, context: nil, hints: nil)
+        #endif
+    }
+}
+
+
+
 
 /*
 
