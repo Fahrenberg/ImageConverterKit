@@ -1,6 +1,6 @@
 //
-//  ImageCompressorTests.swift
-//  ImageCompressionKit
+//  ImageConverterTests.swift
+//  ImageConversionKit
 //
 //  Created by Jean-Nicolas on 18.06.2026.
 //
@@ -13,9 +13,9 @@ import UniformTypeIdentifiers
 
 @testable import ImageCompressionKit
 
-struct HEICImageCompressorTests {
+struct HEICImageConverterTests {
     
-    @Test func heicImageDefaultCompression() throws {
+    @Test func heicImageDefaultConversion() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let heicCompressedData = try #require(ImageConverter.heicData(from: originalData))
@@ -63,7 +63,7 @@ struct HEICImageCompressorTests {
     
     
     
-    @Test func heicImageCompressionWithNoCompressionUsingQuality1() throws {
+    @Test func heicImageConversionWithNoConversionUsingQuality1() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
 
@@ -80,8 +80,8 @@ struct HEICImageCompressorTests {
     
 }
 
-struct JPEGImageCompressorTests {
-    @Test func jpegImageCompression() throws {
+struct JPEGImageConverterTests {
+    @Test func jpegImageConversion() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let jpegCompressedData = try #require(ImageConverter.jpegData(from: originalData))
@@ -127,7 +127,7 @@ struct JPEGImageCompressorTests {
         }
     }
     
-    @Test func jpegImageCompressionWithNoCompressionUsingQuality1() throws {
+    @Test func jpegImageConversionWithNoConversionUsingQuality1() throws {
         for imageType in [ImageType.medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             
@@ -138,7 +138,7 @@ struct JPEGImageCompressorTests {
             #expect(jpegCompressedData == nil, "ImageType: \(imageType.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         }
     }
-    @Test func jpegImageCompressionLargeImageWithNoCompressionUsingQuality1() throws {
+    @Test func jpegImageConversionLargeImageWithNoConversionUsingQuality1() throws {
         let originalData = try #require(TestImage.data(size: .large))
 
         // Check file type
