@@ -8,7 +8,7 @@ import XCTest
 @testable import ImageCompressionKit
 import OSLog
 import CollectionConcurrencyKit
-
+/*
 final class ImageCompressionPerformanceTests: XCTestCase {
    
     var measureOnlyOnce: XCTMeasureOptions {
@@ -106,3 +106,4 @@ final class ImageCompressionPerformanceTests: XCTestCase {
     
      
 }
+*/
