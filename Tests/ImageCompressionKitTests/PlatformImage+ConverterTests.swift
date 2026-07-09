@@ -12,12 +12,6 @@ import OSLog
 
 struct PlatformImageCompressionTests {
 
-    @Test func testJPGCompressionWithLargeImage() throws {
-        let image = try #require(TestImage.image(size: .large))
-        let jpegImageData = try #require(image.jpgData())
-        #expect(jpegImageData.count > 0)
-        #expect(jpegImageData.imageType?.isJPGImage == true)
-    }
 
     @Test func testHEICCompressionWithLargeImage() throws {
         let image = try #require(TestImage.image(size: .large))
@@ -25,6 +19,13 @@ struct PlatformImageCompressionTests {
         #expect(heicImageData.count > 0)
         #expect(heicImageData.imageType?.isHEICImage == true)
 
+    }
+
+    @Test func testJPGCompressionWithLargeImage() throws {
+        let image = try #require(TestImage.image(size: .large))
+        let jpegImageData = try #require(image.jpgData())
+        #expect(jpegImageData.count > 0)
+        #expect(jpegImageData.imageType?.isJPGImage == true)
     }
     
     @Test func testPNGConversionWithLargeImage() throws {

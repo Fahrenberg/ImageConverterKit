@@ -24,6 +24,12 @@ extension PlatformImage {
         let data = Data()
         return data
     }
+    
+    // Extensions offers an pngData() converter, remove first from Extension
+//    public func pngData() -> Data? {
+//        let data = Data()
+//        return data
+//    }
 }
 
 /*
