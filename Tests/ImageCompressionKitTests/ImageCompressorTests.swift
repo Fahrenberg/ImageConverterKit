@@ -18,7 +18,7 @@ struct HEICImageCompressorTests {
     @Test func heicImageDefaultCompression() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
-            let heicCompressedData = try #require(ImageCompressor.heicData(from: originalData))
+            let heicCompressedData = try #require(ImageConverter.heicData(from: originalData))
 
             // Check file type
             #expect(originalData.isImage)
@@ -70,7 +70,7 @@ struct HEICImageCompressorTests {
             // Check file type
             #expect(originalData.isImage)
             // Check nil conversion for heic if compression set to 1 (no compression)
-            let heicCompressedData = ImageCompressor.heicData(from: originalData, compressionQuality: 1.0)
+            let heicCompressedData = ImageConverter.heicData(from: originalData, compressionQuality: 1.0)
             #expect(heicCompressedData == nil)
         }
     }
@@ -84,7 +84,7 @@ struct JPEGImageCompressorTests {
     @Test func jpegImageCompression() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
-            let jpegCompressedData = try #require(ImageCompressor.jpegData(from: originalData))
+            let jpegCompressedData = try #require(ImageConverter.jpegData(from: originalData))
 
             // Check file type
             #expect(originalData.isImage)
@@ -134,7 +134,7 @@ struct JPEGImageCompressorTests {
             // Check file type
             #expect(originalData.isImage)
             // Check nil conversion for jpged if image compressed is larger than original
-            let jpegCompressedData = ImageCompressor.jpegData(from: originalData, compressionQuality: 1.0)
+            let jpegCompressedData = ImageConverter.jpegData(from: originalData, compressionQuality: 1.0)
             #expect(jpegCompressedData == nil, "ImageType: \(imageType.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         }
     }
@@ -144,7 +144,7 @@ struct JPEGImageCompressorTests {
         // Check file type
         #expect(originalData.isImage)
         // large file will be compressed by jpeg converted, even with 1, so it is fine to use 1 here with jpeg
-        let jpegCompressedData = ImageCompressor.jpegData(from: originalData, compressionQuality: 1.0)
+        let jpegCompressedData = ImageConverter.jpegData(from: originalData, compressionQuality: 1.0)
         #expect(jpegCompressedData != nil, "ImageType: \(ImageType.large.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         
     }
@@ -155,7 +155,7 @@ struct PNGImageConversionTests {
     @Test func pngConversionToDecodablePNG() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
-            let pngCompressedData = try #require(ImageCompressor.pngData(from: originalData))
+            let pngCompressedData = try #require(ImageConverter.pngData(from: originalData))
 
             // Check file type
             #expect(originalData.isImage)

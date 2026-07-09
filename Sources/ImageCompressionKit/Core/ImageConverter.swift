@@ -11,7 +11,7 @@ import ImageIO
 import Extensions
 import AVFoundation
 
-public enum ImageCompressor {
+public enum ImageConverter {
 
     public static func heicData(
         from imageData: Data,
