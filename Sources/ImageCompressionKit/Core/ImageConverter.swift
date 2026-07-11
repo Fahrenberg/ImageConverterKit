@@ -12,10 +12,10 @@ import Extensions
 import AVFoundation
 
 public enum ImageConverter {
-
+    public static let defaultHEICCompression: Double = 0.75
     public static func heicData(
         from imageData: Data,
-        compressionQuality: Double = 0.75
+        compressionQuality: Double = defaultHEICCompression
     ) -> Data? {
         // HEIC specific, must be less than 1
         precondition(
@@ -33,9 +33,10 @@ public enum ImageConverter {
         return heicData.count <= imageData.count ? heicData : nil
     }
 
+    public static let defaultJPEGCompression: Double = 0.65
     public static func jpegData(
         from imageData: Data,
-        compressionQuality: Double = 0.65
+        compressionQuality: Double = defaultJPEGCompression
     ) -> Data? {
         precondition(
                 (0...1).contains(compressionQuality),
