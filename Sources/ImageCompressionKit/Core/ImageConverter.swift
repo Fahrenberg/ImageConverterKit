@@ -18,7 +18,12 @@ public enum ImageConverter {
         compressionQuality: Double = 0.75
     ) -> Data? {
         // HEIC specific, must be less than 1
-        guard compressionQuality < 1 else { return nil }
+        precondition(
+                (0..<1).contains(compressionQuality),
+                "heic compressionQuality must be between 0 and lower than 1. Returning nil ."
+            )
+        guard compressionQuality < 1 else
+        { return nil }
         guard let heicData = convertData(
             from: imageData,
             type: AVFileType.heic as CFString,
@@ -32,6 +37,12 @@ public enum ImageConverter {
         from imageData: Data,
         compressionQuality: Double = 0.65
     ) -> Data? {
+        precondition(
+                (0...1).contains(compressionQuality),
+                "jpegData compressionQuality must be between 0 and 1. Returning nil ."
+            )
+        guard compressionQuality <= 1 else
+        { return nil }
         guard let jpegData = convertData(
             from: imageData,
             type: UTType.jpeg.identifier as CFString,
