@@ -17,10 +17,10 @@ public enum ImageConverter {
         from imageData: Data,
         compressionQuality: Double = defaultHEICCompression
     ) -> Data? {
-        // HEIC specific, must be less than 1
+        // HEIC specific, compressionQuality must be < 1, precondition stops runtime, assume programmer error
         precondition(
                 (0..<1).contains(compressionQuality),
-                "heic compressionQuality must be between 0 and lower than 1. Returning nil ."
+                "heic compressionQuality must be between 0 and lower than 1."
             )
         guard compressionQuality < 1 else
         { return nil }
@@ -38,12 +38,11 @@ public enum ImageConverter {
         from imageData: Data,
         compressionQuality: Double = defaultJPEGCompression
     ) -> Data? {
+        // CompressionQuality must be <= 1, precondition stops runtime, assume programmer error
         precondition(
                 (0...1).contains(compressionQuality),
-                "jpegData compressionQuality must be between 0 and 1. Returning nil ."
+                "jpegData compressionQuality must be between 0 and 1."
             )
-        guard compressionQuality <= 1 else
-        { return nil }
         guard let jpegData = convertData(
             from: imageData,
             type: UTType.jpeg.identifier as CFString,
