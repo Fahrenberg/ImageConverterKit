@@ -12,41 +12,41 @@ import Extensions
 import AVFoundation
 
 public enum ImageConverter {
-    public static let defaultHEICCompression: Double = 0.75
+    public static let defaultHEICQuality: Double = 0.75
     public static func heicData(
         from imageData: Data,
-        compressionQuality: Double = defaultHEICCompression
+        quality: Double = defaultHEICQuality
     ) -> Data? {
         // HEIC specific, compressionQuality must be < 1, precondition stops runtime, assume programmer error
         precondition(
-                (0..<1).contains(compressionQuality),
-                "heic compressionQuality must be between 0 and lower than 1."
+                (0..<1).contains(quality),
+                "heic compression quality must be between 0 and lower than 1."
             )
-        guard compressionQuality < 1 else
+        guard quality < 1 else
         { return nil }
         guard let heicData = convertData(
             from: imageData,
             type: .heic,
-            compressionQuality: compressionQuality
+            quality: quality
             )
         else { return nil}
         return heicData.count <= imageData.count ? heicData : nil
     }
 
-    public static let defaultJPEGCompression: Double = 0.65
+    public static let defaultJPEGQuality: Double = 0.65
     public static func jpegData(
         from imageData: Data,
-        compressionQuality: Double = defaultJPEGCompression
+        quality: Double = defaultJPEGQuality
     ) -> Data? {
         // CompressionQuality must be <= 1, precondition stops runtime, assume programmer error
         precondition(
-                (0...1).contains(compressionQuality),
-                "jpegData compressionQuality must be between 0 and 1."
+                (0...1).contains(quality),
+                "jpegData compression quality must be between 0 and 1."
             )
         guard let jpegData = convertData(
             from: imageData,
             type: .jpeg,
-            compressionQuality: compressionQuality
+            quality: quality
             )
         else { return nil }
         return jpegData.count <= imageData.count ? jpegData : nil
@@ -64,37 +64,48 @@ public enum ImageConverter {
     /// 
     /// The image is decoded from `imageData` and re-encoded using the destination
     /// image type. For lossy formats (such as HEIC and JPEG), an optional
-    /// `compressionQuality` in the range `0...1` may be supplied.
-    /// 
+    /// `quality` in the range `0...1` may be supplied.
+    ///
+    /// For lossy formats (such as HEIC and JPEG), an optional compression
+    /// `quality` in the range `0...1` may be supplied:
+    ///    - 0 means max compression and lowest quality
+    ///    - 1 means best quality but low or none compression.
+    ///
     /// If the destination format does not benefit from an alpha channel, any
     /// unused alpha channel is removed before encoding to reduce file size and
     /// avoid unnecessary memory usage.
-    /// 
+    ///
+    ///
     /// - Parameters:
     ///   - imageData: The source image data.
     ///   - type: The destination image type (UTType).
-    ///   - compressionQuality: The compression quality for lossy formats. Ignored
-    ///     for lossless formats such as PNG. 0 means max compression, 1 means least compression.
+    ///   - quality: The compression quality for lossy formats. Ignored
+    ///     for lossless formats such as PNG.
+    ///
     /// - Returns: The converted image data, or `nil` if the image could not be
     ///   decoded or encoded.
     internal static func convertData(
         from imageData: Data,
         type: UTType,
-        compressionQuality: CGFloat? = nil
+        quality: CGFloat? = nil
     ) -> Data? {
         guard let source = CGImageSourceCreateWithData(imageData as CFData, nil),
               CGImageSourceGetCount(source) > 0,
               let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil)
         else { return nil }
         
-        return convertData(from: cgImage, type: type, compressionQuality: compressionQuality)
+        return convertData(from: cgImage, type: type, quality: quality)
     }
     
     /// Converts cgImage data to the specified image format using ImageIO.
     ///
     /// The image is decoded from `cgImage` and re-encoded using the destination
-    /// image type. For lossy formats (such as HEIC and JPEG), an optional
-    /// `compressionQuality` in the range `0...1` may be supplied.
+    /// image type.
+    ///
+    /// For lossy formats (such as HEIC and JPEG), an optional compression
+    /// `quality` in the range `0...1` may be supplied:
+    ///    - 0 means max compression and lowest quality
+    ///    - 1 means best quality but low or none compression.
     ///
     /// If the destination format does not benefit from an alpha channel, any
     /// unused alpha channel is removed before encoding to reduce file size and
@@ -103,16 +114,17 @@ public enum ImageConverter {
     /// - Parameters:
     ///   - cgImage: The source CGImage.
     ///   - type: The destination image type (UTType).
-    ///   - compressionQuality: The compression quality for lossy formats. Ignored
-    ///     for lossless formats such as PNG. 0 means max compression, 1 means least compression.
+    ///   - quality: The compression quality for lossy formats. Ignored
+    ///     for lossless formats such as PNG.
+    ///
     /// - Returns: The converted image data, or `nil` if the image could not be
     ///   decoded or encoded.
     internal static func convertData(
         from cgImage: CGImage,
         type: UTType,
-        compressionQuality: CGFloat? = nil
+        quality: CGFloat? = nil
     ) -> Data? {
-        let quality = compressionQuality.map { min(max($0, 0), 1) }
+        let quality = quality.map { min(max($0, 0), 1) }
         let image: CGImage = shouldRemoveAlpha(for: type)
             ? (cgImage.removingAlphaIfNeeded() ?? cgImage)
             : cgImage

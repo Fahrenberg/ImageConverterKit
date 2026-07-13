@@ -119,7 +119,7 @@ struct JPEGImageConverterTests {
             // Check file type
             #expect(originalData.isImage)
             // Check nil conversion for jpged if image compressed is larger than original
-            let jpegCompressedData = ImageConverter.jpegData(from: originalData, compressionQuality: 1.0)
+            let jpegCompressedData = ImageConverter.jpegData(from: originalData, quality: 1.0)
             #expect(jpegCompressedData == nil, "ImageType: \(imageType.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         }
     }
@@ -129,7 +129,7 @@ struct JPEGImageConverterTests {
         // Check file type
         #expect(originalData.isImage)
         // large file will be compressed by jpeg converted, even with 1, so it is fine to use 1 here with jpeg
-        let jpegCompressedData = ImageConverter.jpegData(from: originalData, compressionQuality: 1.0)
+        let jpegCompressedData = ImageConverter.jpegData(from: originalData, quality: 1.0)
         #expect(jpegCompressedData != nil, "ImageType: \(ImageType.large.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         
     }

@@ -15,20 +15,20 @@ extension PlatformImage {
     /// HEIC Image Compression (more efficient, slower)
     ///
     /// Use it only with [supported devices for HEIC](https://support.apple.com/en-us/HT207022)
-    public func heicData(compressionQuality: Double = ImageConverter.defaultHEICCompression) -> Data? {
+    public func heicData(quality: Double = ImageConverter.defaultHEICQuality) -> Data? {
         guard let cgImage = self.platformCGImage,
               let data = ImageConverter.convertData(from: cgImage,
                                                     type: .png),
-              let heicData = ImageConverter.heicData(from: data, compressionQuality: compressionQuality)
+              let heicData = ImageConverter.heicData(from: data, quality: quality)
         else { return nil }
         return heicData
     }
 
-    public func jpgData(compressionQuality: Double = ImageConverter.defaultJPEGCompression) -> Data? {
+    public func jpgData(quality: Double = ImageConverter.defaultJPEGQuality) -> Data? {
         guard let cgImage = self.platformCGImage,
               let data = ImageConverter.convertData(from: cgImage,
                                                     type: .png),
-              let jpegData = ImageConverter.jpegData(from: data, compressionQuality: compressionQuality)
+              let jpegData = ImageConverter.jpegData(from: data, quality: quality)
         else { return nil }
         return jpegData
     }

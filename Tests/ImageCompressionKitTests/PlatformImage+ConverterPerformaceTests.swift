@@ -8,12 +8,12 @@ import XCTest
 @testable import ImageCompressionKit
 import OSLog
 import CollectionConcurrencyKit
-/*
+
 final class ImageCompressionPerformanceTests: XCTestCase {
    
     var measureOnlyOnce: XCTMeasureOptions {
         let option = XCTMeasureOptions()
-        option.iterationCount = 1
+        option.iterationCount = 2
         return option
     }
     
@@ -23,10 +23,10 @@ final class ImageCompressionPerformanceTests: XCTestCase {
         let image = try XCTUnwrap(TestImage.image(size: .large))
         
         self.measure(options: measureOnlyOnce) { // 0.025
-            _ = image.jpgDataCompression(compressionQuality: jpgQuality)
+            _ = try? XCTUnwrap(image.jpgData(quality: jpgQuality))
         }
     }
-    
+/*
     
     func testPerformanceHEICCompressorLargeData() throws {
         let heicQuality: CGFloat = 0.1
@@ -102,8 +102,8 @@ final class ImageCompressionPerformanceTests: XCTestCase {
             }
         }
     }
-    
+*/
     
      
 }
-*/
+
