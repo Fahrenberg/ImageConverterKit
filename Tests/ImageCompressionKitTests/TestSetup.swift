@@ -22,10 +22,10 @@ import Testing
 
 extension Logger {
     static let subsystem = "\(Bundle.main.bundleIdentifier!)"
-    static let test = Logger(subsystem: subsystem, category: "ImageCompressionTests")
+    static let test = Logger(subsystem: subsystem, category: "ImageConverterTests")
 }
 
-enum ImageType: String, CaseIterable {
+enum ImageSize: String, CaseIterable {
     case large, medium, small, small_center, small_left, small_right
     
     var imageAlignment: PlatformImage.ImageAlignment {
@@ -43,7 +43,7 @@ enum ImageType: String, CaseIterable {
 }
 
 struct TestImage {
-    static func image(size type: ImageType) -> PlatformImage? {
+    static func image(size type: ImageSize) -> PlatformImage? {
         let bundle = Bundle.module
         guard let imageURL = bundle.url(forResource: type.rawValue, withExtension: "bmp") else {
             return nil
@@ -55,7 +55,7 @@ struct TestImage {
         #endif
     }
     
-    static func data(size type: ImageType) -> Data? {
+    static func data(size type: ImageSize) -> Data? {
         let bundle = Bundle.module
         guard let imageURL = bundle.url(forResource: type.rawValue, withExtension: "bmp") else {
             return nil

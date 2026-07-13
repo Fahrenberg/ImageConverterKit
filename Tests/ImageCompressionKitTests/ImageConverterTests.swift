@@ -16,7 +16,7 @@ import UniformTypeIdentifiers
 struct HEICImageConverterTests {
     
     @Test func heicImageDataConverterWithDefaultCompressionTests() throws {
-        for imageType in [ImageType.large, .medium, .small] {
+        for imageType in [ImageSize.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let heicCompressedData = try #require(ImageConverter.heicData(from: originalData))
 
@@ -67,7 +67,7 @@ struct HEICImageConverterTests {
 
 struct JPEGImageConverterTests {
     @Test func jpegImageDataConverterTests() throws {
-        for imageType in [ImageType.large, .medium, .small] {
+        for imageType in [ImageSize.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let jpegCompressedData = try #require(ImageConverter.jpegData(from: originalData))
 
@@ -113,7 +113,7 @@ struct JPEGImageConverterTests {
     }
     
     @Test func jpegImageDataConverterUsingQuality1() throws {
-        for imageType in [ImageType.medium, .small] {
+        for imageType in [ImageSize.medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             
             // Check file type
@@ -130,7 +130,7 @@ struct JPEGImageConverterTests {
         #expect(originalData.isImage)
         // large file will be compressed by jpeg converted, even with 1, so it is fine to use 1 here with jpeg
         let jpegCompressedData = ImageConverter.jpegData(from: originalData, quality: 1.0)
-        #expect(jpegCompressedData != nil, "ImageType: \(ImageType.large.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
+        #expect(jpegCompressedData != nil, "ImageType: \(ImageSize.large.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         
     }
     
@@ -138,7 +138,7 @@ struct JPEGImageConverterTests {
 
 struct PNGImageConverterTests {
     @Test func pngConverterDimensionTest() throws {
-        for imageType in [ImageType.large, .medium, .small] {
+        for imageType in [ImageSize.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let pngCompressedData = try #require(ImageConverter.pngData(from: originalData))
 
