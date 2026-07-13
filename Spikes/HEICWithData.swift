@@ -45,7 +45,7 @@ import ImageCompressionKit
     _ = originalImage.height
     
    
-    guard let heicData = ImageConverter.heicData(from: originalData),
+    guard let heicData = originalData.heicData(),
           let heicSource = CGImageSourceCreateWithData(heicData as CFData, nil),
           let heicImage =  CGImageSourceCreateImageAtIndex(heicSource, 0, nil)
     else { return  }

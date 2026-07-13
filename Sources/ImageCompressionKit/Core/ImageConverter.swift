@@ -13,52 +13,7 @@ import AVFoundation
 
 public enum ImageConverter {
     public static let defaultHEICQuality: Double = 0.75
-    public static func heicData(
-        from imageData: Data,
-        quality: Double = defaultHEICQuality
-    ) -> Data? {
-        // HEIC specific, compressionQuality must be < 1, precondition stops runtime, assume programmer error
-        precondition(
-                (0..<1).contains(quality),
-                "heic compression quality must be between 0 and lower than 1."
-            )
-        guard quality < 1 else
-        { return nil }
-        guard let heicData = convertData(
-            from: imageData,
-            type: .heic,
-            quality: quality
-            )
-        else { return nil}
-        return heicData.count <= imageData.count ? heicData : nil
-    }
-
     public static let defaultJPEGQuality: Double = 0.65
-    public static func jpegData(
-        from imageData: Data,
-        quality: Double = defaultJPEGQuality
-    ) -> Data? {
-        // CompressionQuality must be <= 1, precondition stops runtime, assume programmer error
-        precondition(
-                (0...1).contains(quality),
-                "jpegData compression quality must be between 0 and 1."
-            )
-        guard let jpegData = convertData(
-            from: imageData,
-            type: .jpeg,
-            quality: quality
-            )
-        else { return nil }
-        return jpegData.count <= imageData.count ? jpegData : nil
-    }
-
-    public static func pngData(from imageData: Data) -> Data? {
-       let pngData =  convertData(
-            from: imageData,
-            type: .png
-        )
-        return pngData
-    }
     
     /// Converts image data to the specified image format using ImageIO.
     /// 
@@ -158,7 +113,7 @@ public enum ImageConverter {
     
 }
 
-private extension CGImage {
+fileprivate extension CGImage {
     /// Returns a copy of the image without an alpha channel when the image is
     /// fully opaque.
     ///

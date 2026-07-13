@@ -19,7 +19,7 @@ extension PlatformImage {
         guard let cgImage = self.platformCGImage,
               let data = ImageConverter.convertData(from: cgImage,
                                                     type: .png),
-              let heicData = ImageConverter.heicData(from: data, quality: quality)
+              let heicData = data.heicData(quality: quality)
         else { return nil }
         return heicData
     }
@@ -28,7 +28,7 @@ extension PlatformImage {
         guard let cgImage = self.platformCGImage,
               let data = ImageConverter.convertData(from: cgImage,
                                                     type: .png),
-              let jpegData = ImageConverter.jpegData(from: data, quality: quality)
+              let jpegData = data.jpegData(quality: quality)
         else { return nil }
         return jpegData
     }

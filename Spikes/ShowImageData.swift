@@ -25,7 +25,7 @@ import Extensions
     _ = imageData.count.outputKBytes
     _ = PlatformImage(data: imageData)
     
-    guard let compressedImageData = ImageConverter.heicData(from: imageData,quality: 0)
+    guard let compressedImageData = imageData.heicData(quality: 0)
     else { return }
     _ = compressedImageData.count.outputKBytes
     _ = PlatformImage(data: compressedImageData)
