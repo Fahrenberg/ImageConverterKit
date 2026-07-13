@@ -5,15 +5,15 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/Fahrenberg/ImageCompressionKit)
 
 
-## Data Image Compressor
+## Data Image Converter
 
 Converts and compresses image `Data` using device/platform independent ImageIO.
 
-| Compression<br> Method | Default<br> Compression<br> Quality | Usage |
+| Converter<br> Method | Default<br> Compression<br> Quality | Usage |
 | ------------------ | :------------------------------: | ----- |
-| HEIC | `0.75` | `.heicData(from: imageData)` |
-| JPEG | `0.65` | `.jpegData(from: imageData)` |
-| PNG | `none` | `.pngData(from: imageData)` |
+| HEIC | `0.75` | `.heicData()` |
+| JPEG | `0.65` | `.jpegData()` |
+| PNG | `none` | `.pngData()` |
 
 Notes:
 - The default HEIC compression quality (`0.75`) matches the behavior of the native `UIImage.heicData()` API introduced in iOS 17.
@@ -21,8 +21,8 @@ Notes:
 
 - HEIC and JPEG allow to overwrite default compression quality with:
 ````
-.heicData(from imageData,compressionQuality: Double)
-.jpegData(from imageData,compressionQuality: Double)
+.heicData(quality: Double)
+.jpegData(quality: Double)
 ````
 ## Image Data Checks
 #### `Data.imageType`
@@ -55,11 +55,11 @@ extension UTType {
 #expect(heicCompressedData.imageType?.isHEICImage == true)
 `````
 
-## PlatformImage+Compression
+## PlatformImage+Converter
 
 Convenience wrapper to compress `PlatformImage` directly into a `Data`, uses [PlatformImage](https://github.com/Fahrenberg/Extensions?tab=readme-ov-file#platformimage) typealias for UIImage or NSImage. See [Extensions](https://github.com/Fahrenberg/Extensions?tab=readme-ov-file#swift---extensions---library)
 
-### HEIC Compression
+### HEIC Converter
 
 Notes: 
 - For compress multiple images use **sync** not async, it's faster...
@@ -68,15 +68,15 @@ Notes:
 
 #### Compress to  +/- 10% of askedMaxSize
 ```swift
-public func heicDataCompression(askedMaxSize: UInt64 = .max) -> Data? 
+public func heicData(askedMaxSize: UInt64 = .max) -> Data? 
 ```
-#### Compress by setting compressionQuality
+#### Compress by setting compression quality
 ```swift
-public func heicDataCompression(compressionQuality: CGFloat) -> Data?
+public func heicData(quality: Double) -> Data?
 ```
 
 
-### JPG Compression
+### JPG Converter
 
 Notes:
 - For compress multiple images use `Task {}` async (50% faster) rather than sync.
@@ -86,11 +86,11 @@ Notes:
 
 #### Compress to  +/- 10% of askedMaxSize
 ```swift
-public func jpgDataCompression(askedMaxSize: UInt64 = .max) -> Data? 
+public func jpgData(askedMaxSize: UInt64 = .max) -> Data? 
 ```
-#### Compress by setting compressionQuality
+#### Compress by setting compression quality
 ```swift
-public func jpgDataCompression(compressionQuality: CGFloat) -> Data?
+public func jpgData(quality: Double) -> Data?
 ```
 
 See [different approaches](https://stackoverflow.com/questions/29726643/how-to-compress-of-reduce-the-size-of-an-image-before-uploading-to-parse-as-pffi)
