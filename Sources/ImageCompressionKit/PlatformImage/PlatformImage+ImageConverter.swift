@@ -18,7 +18,7 @@ extension PlatformImage {
     public func heicData(compressionQuality: Double = ImageConverter.defaultHEICCompression) -> Data? {
         guard let cgImage = self.platformCGImage,
               let data = ImageConverter.convertData(from: cgImage,
-                                                    type: UTType.png.identifier as CFString),
+                                                    type: .png),
               let heicData = ImageConverter.heicData(from: data, compressionQuality: compressionQuality)
         else { return nil }
         return heicData
@@ -26,7 +26,8 @@ extension PlatformImage {
 
     public func jpgData(compressionQuality: Double = ImageConverter.defaultJPEGCompression) -> Data? {
         guard let cgImage = self.platformCGImage,
-              let data = ImageConverter.convertData(from: cgImage, type: UTType.png.identifier as CFString ),
+              let data = ImageConverter.convertData(from: cgImage,
+                                                    type: .png),
               let jpegData = ImageConverter.jpegData(from: data, compressionQuality: compressionQuality)
         else { return nil }
         return jpegData

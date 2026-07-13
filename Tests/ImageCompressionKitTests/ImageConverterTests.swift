@@ -15,7 +15,7 @@ import UniformTypeIdentifiers
 
 struct HEICImageConverterTests {
     
-    @Test func heicImageConverterWithDefaultCompression() throws {
+    @Test func heicImageConverterWithDefaultCompressionTests() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let heicCompressedData = try #require(ImageConverter.heicData(from: originalData))
@@ -66,7 +66,7 @@ struct HEICImageConverterTests {
 }
 
 struct JPEGImageConverterTests {
-    @Test func jpegImageConversion() throws {
+    @Test func jpegImageConverterTests() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let jpegCompressedData = try #require(ImageConverter.jpegData(from: originalData))
