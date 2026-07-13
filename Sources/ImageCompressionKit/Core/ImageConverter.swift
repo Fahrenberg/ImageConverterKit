@@ -61,15 +61,15 @@ public enum ImageConverter {
     }
     
     /// Converts image data to the specified image format using ImageIO.
-    ///
+    /// 
     /// The image is decoded from `imageData` and re-encoded using the destination
     /// image type. For lossy formats (such as HEIC and JPEG), an optional
     /// `compressionQuality` in the range `0...1` may be supplied.
-    ///
+    /// 
     /// If the destination format does not benefit from an alpha channel, any
     /// unused alpha channel is removed before encoding to reduce file size and
     /// avoid unnecessary memory usage.
-    ///
+    /// 
     /// - Parameters:
     ///   - imageData: The source image data.
     ///   - type: The destination image type (UTType).
@@ -82,41 +82,12 @@ public enum ImageConverter {
         type: UTType,
         compressionQuality: CGFloat? = nil
     ) -> Data? {
-        let quality = compressionQuality.map { min(max($0, 0), 1) }
-
         guard let source = CGImageSourceCreateWithData(imageData as CFData, nil),
               CGImageSourceGetCount(source) > 0,
               let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil)
-        else {
-            return nil
-        }
-
-        let image: CGImage = shouldRemoveAlpha(for: type)
-            ? (cgImage.removingAlphaIfNeeded() ?? cgImage)
-            : cgImage
-
-        let output = NSMutableData()
-
-        guard let destination = CGImageDestinationCreateWithData(
-            output,
-            type.identifier as CFString,
-            1,
-            nil
-        ) else {
-            return nil
-        }
-
-        let options: NSDictionary? = quality.map {
-            [kCGImageDestinationLossyCompressionQuality: $0]
-        }
-
-        CGImageDestinationAddImage(destination, image, options)
-
-        guard CGImageDestinationFinalize(destination) else {
-            return nil
-        }
-
-        return output as Data
+        else { return nil }
+        
+        return convertData(from: cgImage, type: type, compressionQuality: compressionQuality)
     }
     
     /// Converts cgImage data to the specified image format using ImageIO.
@@ -141,32 +112,23 @@ public enum ImageConverter {
         type: UTType,
         compressionQuality: CGFloat? = nil
     ) -> Data? {
-        
+        let quality = compressionQuality.map { min(max($0, 0), 1) }
         let image: CGImage = shouldRemoveAlpha(for: type)
             ? (cgImage.removingAlphaIfNeeded() ?? cgImage)
             : cgImage
 
-
         let output = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(output,type.identifier as CFString,1,nil)
+        else { return nil }
 
-        guard let destination = CGImageDestinationCreateWithData(
-            output,
-            type.identifier as CFString,
-            1,
-            nil
-        ) else {
-            return nil
-        }
-
-        let options: NSDictionary? = compressionQuality.map {
-            [kCGImageDestinationLossyCompressionQuality: min(max($0, 0), 1)]
+        let options: NSDictionary? = quality.map {
+            [kCGImageDestinationLossyCompressionQuality: $0]
         }
 
         CGImageDestinationAddImage(destination, image, options)
 
-        guard CGImageDestinationFinalize(destination) else {
-            return nil
-        }
+        guard CGImageDestinationFinalize(destination)
+        else { return nil  }
 
         return output as Data
     }
