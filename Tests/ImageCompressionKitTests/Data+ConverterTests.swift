@@ -1,5 +1,5 @@
 //
-//  ImageConverterTests.swift
+//  Data+ConverterTests.swift
 //  ImageConversionKit
 //
 //  Created by Jean-Nicolas on 18.06.2026.
@@ -15,7 +15,7 @@ import UniformTypeIdentifiers
 
 struct HEICImageDataConverterTests {
     
-    @Test func heicImageDataConverterWithDefaultCompressionTests() throws {
+    @Test func convertsHEICDataUsingDefaultCompression() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let heicCompressedData = try #require(originalData.heicData())
@@ -61,7 +61,7 @@ struct HEICImageDataConverterTests {
         }
     }
     
-    @Test func testHEICaskedMaxSize() throws {
+    @Test func returnsHEICDataWithinAskedMaxSize() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let askedMaxSize: Int = imageType.askedMaxSize(for: .heic)
             let originalData = try #require(TestImage.data(size: imageType))
@@ -113,13 +113,47 @@ struct HEICImageDataConverterTests {
         }
         
     }
+
+    @Test func returnsOriginalDataWhenAskedMaxSizeExceedsOriginal() throws {
+        let originalData = try #require(TestImage.data(size: .large))
+        let askedMaxSize = originalData.count + 1
+
+        let convertedData = try #require(
+            originalData.heicData(askedMaxSize: askedMaxSize)
+        )
+
+        #expect(convertedData.imageType?.isHEICImage == true)
+        #expect(convertedData.count > 0)
+        #expect(convertedData.count <= askedMaxSize)
+    }
+
+    @Test func returnsBestEffortWhenTargetSizeCannotBeReached() throws {
+        let originalData = try #require(TestImage.data(size: .large))
+        let impossibleAskedMaxSize = 1
+
+        let convertedData = try #require(
+            originalData.heicData(askedMaxSize: impossibleAskedMaxSize)
+        )
+
+        #expect(convertedData.imageType?.isHEICImage == true)
+        #expect(convertedData.count > impossibleAskedMaxSize)
+        #expect(convertedData.count < originalData.count)
+    }
+
+    @Test func returnsNilForZeroAskedMaxSize() throws {
+        let originalData = try #require(TestImage.data(size: .large))
+
+        let convertedData = originalData.heicData(askedMaxSize: 0)
+
+        #expect(convertedData == nil)
+    }
     
     
     
 }
 
 struct JPEGImageDataConverterTests {
-    @Test func jpegImageDataConverterTests() throws {
+    @Test func convertsJPEGDataUsingDefaultCompression() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let jpegCompressedData = try #require(originalData.jpegData())
@@ -165,7 +199,7 @@ struct JPEGImageDataConverterTests {
         }
     }
     
-    @Test func jpegImageDataConverterUsingQuality1() throws {
+    @Test func returnsNilWhenJPEGQualityOneProducesLargerData() throws {
         for imageType in [ImageType.medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             
@@ -176,7 +210,7 @@ struct JPEGImageDataConverterTests {
             #expect(jpegCompressedData == nil, "ImageType: \(imageType.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         }
     }
-    @Test func jpegImageDataConverterLargeImageUsingQuality1() throws {
+    @Test func convertsLargeImageUsingJPEGQualityOne() throws {
         let originalData = try #require(TestImage.data(size: .large))
 
         // Check file type
@@ -190,7 +224,7 @@ struct JPEGImageDataConverterTests {
 }
 
 struct PNGImageDataConverterTests {
-    @Test func pngConverterDimensionTest() throws {
+    @Test func preservesImageDimensionsWhenConvertingToPNG() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let pngCompressedData = try #require(originalData.pngData())

@@ -44,12 +44,12 @@ enum ImageType: String, CaseIterable {
     
     private static let maxSizes: [UTType: [ImageType: Int]] = [
         .heic: [
-            .large: 300_000,
-            .medium: 100_000,
-            .small: 20_000
+            .large: 2_000_000,
+            .medium: 400_000,
+            .small: 50_000
         ],
         .jpeg: [
-            .large: 500_000,
+            .large: 2_000_000,
             .medium: 200_000,
             .small: 30_000
         ]

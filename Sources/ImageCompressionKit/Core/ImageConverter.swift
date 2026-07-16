@@ -149,103 +149,154 @@ fileprivate extension CGImage {
 }
 
 
-/*
-extension ImageConverter
-extension PlatformImage {
-
-    /// Generic method to find the optimal compression quality for the target size
+extension ImageConverter {
+    /// Converts image data and searches for a compression quality whose resulting
+    /// size is as close as possible to the requested size.
     ///
-    /// Skips compression if the original image size (PNG format) is smaller than or equal to the askedMaxSize.
-    /// If no size constraint is set, returns the original PNG data.
+    /// The search assumes that increasing the quality produces larger output data.
     ///
-    private func findOptimalCompressionQuality(
-        askedMaxSize: UInt64,
-        compressionClosure: (Double) -> Data?
+    /// - Parameters:
+    ///   - imageData: The source image data.
+    ///   - type: The destination image type.
+    ///   - askedMaxSize: The target data size in bytes.
+    ///
+    /// - Returns: Converted data within the accepted tolerance when possible.
+    ///   Otherwise, returns the closest result found during the search.
+    internal static func convertData(
+        from imageData: Data,
+        to type: UTType,
+        with askedMaxSize: Int
     ) -> Data? {
-        // Check if the image's original PNG size is smaller or equal to askedMaxSize
-        if let originalData = self.pngData(),
-           askedMaxSize == .max || UInt64(originalData.count) <= askedMaxSize {
-            Logger.source.debug(
-                """
-                Skipping compression as original image size (\(originalData.count) bytes)
-                is smaller than or equal to the askedMaxSize (\(askedMaxSize == .max ? ".max" : String(describing: askedMaxSize)) bytes).
-                """
-            )
-            return originalData
+        guard askedMaxSize > 0 else {
+            return nil
         }
 
-        // Constants for the compression search algorithm
-        let tolerance: Double = 0.1 // 10% tolerance
-        let maxAttempts = 6 // Limit to avoid infinite loops in case of issues, approx to double digit suffcient
-        // Initial bounds for the compression quality (0.0 - lowest, 1.0 - highest)
-        var lowerBound: Double = 0.0
-        var upperBound: Double = 1.0
-        // Results
-        var midQuality: Double = 1.0
-        var attempts = 0
+        let tolerance = 0.2
+        let minimumSize = Int(
+            Double(askedMaxSize) * (1.0 - tolerance)
+        )
+        let maximumSize = askedMaxSize
+
+        let defaultQuality = ImageConverter.defaultHEICQuality
+        let maximumQuality = 0.99
+        let maxAttempts = 10
+
+        guard let defaultData = ImageConverter.convertData(
+            from: imageData,
+            type: type,
+            quality: defaultQuality
+        ) else {
+            Logger.source.debug(
+                "Conversion failed for \(type.description)."
+            )
+            return nil
+        }
+
+        if (minimumSize...maximumSize).contains(defaultData.count) {
+            logSuccessfulConversion(
+                askedMaxSize: askedMaxSize,
+                quality: defaultQuality,
+                attempts: 1
+            )
+
+            return defaultData
+        }
+
+        var lowerQuality: Double
+        var upperQuality: Double
+
+        if defaultData.count < minimumSize {
+            // The result is too small, so only search higher qualities.
+            lowerQuality = defaultQuality
+            upperQuality = maximumQuality
+        } else {
+            // The result is too large, so only search lower qualities.
+            lowerQuality = 0
+            upperQuality = defaultQuality
+        }
+
+        var bestResult = CompressionResult(
+            data: defaultData,
+            quality: defaultQuality,
+            distanceFromTarget: abs(defaultData.count - askedMaxSize)
+        )
+
+        var attempts = 1
 
         while attempts < maxAttempts {
-            midQuality = (lowerBound + upperBound) / 2.0
-
-            // Compress the image with the current quality setting
-            guard let compressedData = compressionClosure(midQuality) else {
-                return nil // Return nil if compression fails
-            }
-
-            let dataSize = UInt64(compressedData.count)
-            let minSize = UInt64(Double(askedMaxSize) * (1.0 - tolerance))
-            let maxSize = UInt64(Double(askedMaxSize) * (1.0 + tolerance))
-
-            // Check if the data size is within the 10% tolerance range
-            if dataSize >= minSize && dataSize <= maxSize {
-                Logger.source.debug(
-                    """
-                    Compression completed for askedMaxSize (\(askedMaxSize))
-                    CompressionQuality: \(midQuality)
-                    Used attempts: \(attempts)
-                    """
-                )
-                return compressedData
-            } else if dataSize > askedMaxSize {
-                // Data size too large, reduce the compression quality
-                upperBound = midQuality
-            } else {
-                // Data size too small, increase the compression quality
-                lowerBound = midQuality
-            }
             attempts += 1
+
+            let quality = (lowerQuality + upperQuality) / 2
+
+            guard let convertedData = ImageConverter.convertData(
+                from: imageData,
+                type: type,
+                quality: quality
+            ) else {
+                return nil
+            }
+
+            let dataSize = convertedData.count
+            let distanceFromTarget = abs(dataSize - askedMaxSize)
+
+            if distanceFromTarget < bestResult.distanceFromTarget {
+                bestResult = CompressionResult(
+                    data: convertedData,
+                    quality: quality,
+                    distanceFromTarget: distanceFromTarget
+                )
+            }
+
+            if (minimumSize...maximumSize).contains(dataSize) {
+                logSuccessfulConversion(
+                    askedMaxSize: askedMaxSize,
+                    quality: quality,
+                    attempts: attempts
+                )
+
+                return convertedData
+            }
+
+            if dataSize < minimumSize {
+                // Too small: increase quality.
+                lowerQuality = quality
+            } else {
+                // Too large: decrease quality.
+                upperQuality = quality
+            }
         }
-        Logger.source.error(
+
+        Logger.source.warning(
             """
-            Compression not completed for askedMaxSize (\(askedMaxSize))
-            Used attempts \(attempts) (max: \(maxAttempts))
-            Using CompressionQuality: \(midQuality)
+            Exact compression range not reached.
+            Requested max. size: \(askedMaxSize)
+            Resulting size: \(bestResult.data.count)
+            Compression quality: \(bestResult.quality)
+            Attempts: \(attempts)
             """
         )
-        // If max attempts are reached, use the best found compression quality
-        return compressionClosure(midQuality)
+
+        return bestResult.data
     }
 
-    /// Compress UIImage or NSImage to askedMaxSize (+/-10%) using HEIC format
-    ///
-    /// Skips compression if the original image size (PNG format) is smaller than or equal to the askedMaxSize.
-    /// If no size constraint is set, returns the original PNG data.
-    ///
-    public func heicDataCompression(askedMaxSize: UInt64 = .max) -> Data? {
-        return findOptimalCompressionQuality(askedMaxSize: askedMaxSize) { compressionQuality in
-            return self.heicDataCompression(compressionQuality: compressionQuality)
-        }
+    private struct CompressionResult {
+        let data: Data
+        let quality: Double
+        let distanceFromTarget: Int
     }
 
-    /// Compress UIImage or NSImage to askedMaxSize (+/-10%) using JPEG format
-    ///
-    /// Skips compression if the original image size (PNG format) is smaller than or equal to the askedMaxSize.
-    /// If no size constraint is set, returns the original PNG data.
-    ///
-    public func jpgDataCompression(askedMaxSize: UInt64 = .max) -> Data? {
-        return findOptimalCompressionQuality(askedMaxSize: askedMaxSize) { compressionQuality in
-            return self.jpgDataCompression(compressionQuality: compressionQuality)
-        }
+    private static func logSuccessfulConversion(
+        askedMaxSize: Int,
+        quality: Double,
+        attempts: Int
+    ) {
+        Logger.source.debug(
+            """
+            Compression completed.
+            Requested size: \(askedMaxSize.outputKBytes)
+            Compression quality: \(quality)
+            Attempts: \(attempts)
+            """
+        )
     }
 }
-*/
