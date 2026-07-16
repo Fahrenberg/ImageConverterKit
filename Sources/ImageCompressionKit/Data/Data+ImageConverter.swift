@@ -12,9 +12,7 @@ import UniformTypeIdentifiers
 
 //MARK: HEIC
 extension Data {
-    public func heicData(
-        quality: Double = ImageConverter.defaultHEICQuality
-    ) -> Data? {
+    public func heicData(quality: Double = ImageConverter.defaultHEICQuality) -> Data? {
         // HEIC specific, compressionQuality must be < 1, precondition stops runtime, assume programmer error
         precondition(
             (0..<1).contains(quality),
@@ -31,18 +29,14 @@ extension Data {
         return heicData.count <= self.count ? heicData : nil
     }
     
-    public func heicData(
-        askedMaxSize: Int
-    ) -> Data? {
-        return nil
+    public func heicData(askedMaxSize: Int) -> Data? {
+        return ImageConverter.convertData(from: self, to: .heic, with: askedMaxSize)
     }
 }
 
 //MARK: JPEG
 extension Data {
-    public  func jpegData(
-        quality: Double = ImageConverter.defaultJPEGQuality
-    ) -> Data? {
+    public  func jpegData(quality: Double = ImageConverter.defaultJPEGQuality) -> Data? {
         // CompressionQuality must be <= 1, precondition stops runtime, assume programmer error
         precondition(
             (0...1).contains(quality),

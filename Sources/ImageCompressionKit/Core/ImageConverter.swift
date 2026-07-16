@@ -9,7 +9,7 @@ import Foundation
 import UniformTypeIdentifiers
 import ImageIO
 import Extensions
-import AVFoundation
+import OSLog
 
 public enum ImageConverter {
     public static let defaultHEICQuality: Double = 0.75

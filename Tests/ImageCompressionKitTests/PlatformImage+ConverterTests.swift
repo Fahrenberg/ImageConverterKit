@@ -34,6 +34,9 @@ struct PlatformImageConverterTests {
         #expect(pngImageData.imageType?.isPNGImage == true)
     }
     
+    
+   
+    
 /*
     //MARK: Using askedMaxSize (bytes)
     func testHEICCompressToSize() throws {

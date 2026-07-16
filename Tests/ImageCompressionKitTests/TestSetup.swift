@@ -8,6 +8,7 @@
 import Foundation
 import OSLog
 import Extensions
+import UniformTypeIdentifiers
 
 @testable import ImageCompressionKit
 
@@ -25,7 +26,7 @@ extension Logger {
     static let test = Logger(subsystem: subsystem, category: "ImageConverterTests")
 }
 
-enum ImageSize: String, CaseIterable {
+enum ImageType: String, CaseIterable {
     case large, medium, small, small_center, small_left, small_right
     
     var imageAlignment: PlatformImage.ImageAlignment {
@@ -40,10 +41,28 @@ enum ImageSize: String, CaseIterable {
             return .center
         }
     }
+    
+    private static let maxSizes: [UTType: [ImageType: Int]] = [
+        .heic: [
+            .large: 300_000,
+            .medium: 100_000,
+            .small: 20_000
+        ],
+        .jpeg: [
+            .large: 500_000,
+            .medium: 200_000,
+            .small: 30_000
+        ]
+    ]
+
+    func askedMaxSize(for type: UTType) -> Int {
+        let maxSize = ImageType.maxSizes[type]![self]
+        return maxSize! // must be a valid maxSize, for testing purposes stop execution otherwise
+    }
 }
 
 struct TestImage {
-    static func image(size type: ImageSize) -> PlatformImage? {
+    static func image(size type: ImageType) -> PlatformImage? {
         let bundle = Bundle.module
         guard let imageURL = bundle.url(forResource: type.rawValue, withExtension: "bmp") else {
             return nil
@@ -55,7 +74,7 @@ struct TestImage {
         #endif
     }
     
-    static func data(size type: ImageSize) -> Data? {
+    static func data(size type: ImageType) -> Data? {
         let bundle = Bundle.module
         guard let imageURL = bundle.url(forResource: type.rawValue, withExtension: "bmp") else {
             return nil

@@ -46,7 +46,7 @@ final class ImageResizeTests: XCTestCase {
         let baseImage = try XCTUnwrap(TestImage.image(size: .small))
         Logger.test.info("image size: \(baseImage.sizeDescription, privacy: .public)")
         
-        for imageType in [ImageSize.small_left,ImageSize.small_center, ImageSize.small_right] {
+        for imageType in [ImageType.small_left,ImageType.small_center, ImageType.small_right] {
             let imageAligned = try XCTUnwrap(TestImage.image(size: imageType))
             Logger.test.info("imageAligned \(imageType.rawValue, privacy: .public) has size: \(imageAligned.sizeDescription, privacy: .public)")
             let expectedHeight = Int(imageAligned.size.height)
