@@ -74,7 +74,7 @@ extension ImageConverter {
         quality: CGFloat? = nil
     ) -> Data? {
         let quality = quality.map { min(max($0, 0), 1) }
-        let image: CGImage = shouldRemoveAlpha(for: type)
+        let image: CGImage = type.shouldRemoveAlpha
             ? (cgImage.removingAlphaIfNeeded() ?? cgImage)
             : cgImage
 

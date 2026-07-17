@@ -46,6 +46,17 @@ extension UTType {
     public var isPNGImage: Bool {
         conforms(to: .png)
     }
+    
+    internal var shouldRemoveAlpha: Bool {
+        switch self {
+        case UTType.jpeg,
+            UTType.heic,
+            UTType.heif :
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 extension Data {
@@ -83,18 +94,5 @@ extension Data {
     ///   otherwise, `false`.
     public var isImage: Bool {
         imageType != nil
-    }
-}
-
-extension ImageConverter {
-    internal static func shouldRemoveAlpha(for type: UTType) -> Bool {
-        switch type {
-        case UTType.jpeg,
-            UTType.heic,
-            UTType.heif :
-            return true
-        default:
-            return false
-        }
     }
 }
