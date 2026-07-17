@@ -23,12 +23,31 @@ extension PlatformImage {
         else { return nil }
         return heicData
     }
+    
+    public func heicData(askedMaxSize: Int) -> Data? {
+        guard let cgImage = self.platformCGImage,
+              let data = ImageConverter.convertData(from: cgImage,
+                                                    type: .png),
+              let heicData = data.heicData(askedMaxSize: askedMaxSize)
+        else { return nil }
+        return heicData
+    }
 
     public func jpgData(quality: Double = ImageConverter.defaultJPEGQuality) -> Data? {
         guard let cgImage = self.platformCGImage,
               let data = ImageConverter.convertData(from: cgImage,
                                                     type: .png),
               let jpegData = data.jpegData(quality: quality)
+        else { return nil }
+        return jpegData
+    }
+    
+    
+    public func jpgData(askedMaxSize: Int) -> Data? {
+        guard let cgImage = self.platformCGImage,
+              let data = ImageConverter.convertData(from: cgImage,
+                                                    type: .png),
+              let jpegData = data.jpegData(askedMaxSize: askedMaxSize)
         else { return nil }
         return jpegData
     }
