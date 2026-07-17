@@ -13,21 +13,24 @@ import OSLog
 struct PlatformImageConverterTests {
     
     
-    @Test func testHEICConverterWithLargeImage() throws {
+    @Test func convertsImageToHEICWithLargeImage() throws {
         let image = try #require(TestImage.image(size: .large))
         let heicImageData = try #require(image.heicData())
         #expect(heicImageData.count > 0)
         #expect(heicImageData.imageType?.isHEICImage == true)
     }
     
-    @Test func testJPGConverterWithLargeImage() throws {
+    @Test func convertsImaageToJPGWithLargeImage() throws {
         let image = try #require(TestImage.image(size: .large))
         let jpegImageData = try #require(image.jpgData())
         #expect(jpegImageData.count > 0)
         #expect(jpegImageData.imageType?.isJPGImage == true)
     }
     
-    @Test func testPNGConverternWithLargeImage() throws {
+    @Test func convertsImageToJPEGWithinAskedMaxSize() throws {
+    }
+    
+    @Test func convertsImageToPNGWithLargeImage() throws {
         let image = try #require(TestImage.image(size: .large))
         let pngImageData = try #require(image.pngData())
         #expect(pngImageData.count > 0)
