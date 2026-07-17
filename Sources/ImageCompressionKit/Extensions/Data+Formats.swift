@@ -10,7 +10,7 @@ import Extensions
 import ImageIO
 import UniformTypeIdentifiers
 
-//MARK: HEIC
+//MARK: Quality
 extension Data {
     public func heicData(quality: Double = ImageConverter.defaultHEICQuality) -> Data? {
         // HEIC specific, compressionQuality must be < 1, precondition stops runtime, assume programmer error
@@ -28,14 +28,7 @@ extension Data {
         else { return nil}
         return heicData.count <= self.count ? heicData : nil
     }
-    
-    public func heicData(askedMaxSize: Int) -> Data? {
-        return ImageConverter.convertData(from: self, to: .heic, with: askedMaxSize)
-    }
-}
 
-//MARK: JPEG
-extension Data {
     public  func jpegData(quality: Double = ImageConverter.defaultJPEGQuality) -> Data? {
         // CompressionQuality must be <= 1, precondition stops runtime, assume programmer error
         precondition(
@@ -50,14 +43,7 @@ extension Data {
         else { return nil }
         return jpegData.count <= self.count ? jpegData : nil
     }
-    
-    public func jpegData(askedMaxSize: Int) -> Data? {
-        return ImageConverter.convertData(from: self, to: .jpeg, with: askedMaxSize)
-    }
-}
 
-//MARK: PNG
-extension Data {
     public func pngData() -> Data? {
         let pngData =  ImageConverter.convertData(
             from: self,
@@ -69,14 +55,13 @@ extension Data {
     
 }
 
-internal extension Data {
-    /// Adapter to return an CGImage for Data on all platforms
-    var platformCGImage: CGImage? {
-        guard let source = CGImageSourceCreateWithData(self as CFData, nil),
-              CGImageSourceGetCount(source) > 0,
-              let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil)
-        else { return nil }
-        
-        return cgImage
+//MARK: TargetSize
+extension Data {
+    public func heicData(askedMaxSize: Int) -> Data? {
+        return ImageConverter.convertData(from: self, to: .heic, with: askedMaxSize)
+    }
+
+    public func jpegData(askedMaxSize: Int) -> Data? {
+        return ImageConverter.convertData(from: self, to: .jpeg, with: askedMaxSize)
     }
 }

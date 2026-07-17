@@ -86,3 +86,15 @@ extension Data {
     }
 }
 
+extension ImageConverter {
+    internal static func shouldRemoveAlpha(for type: UTType) -> Bool {
+        switch type {
+        case UTType.jpeg,
+            UTType.heic,
+            UTType.heif :
+            return true
+        default:
+            return false
+        }
+    }
+}

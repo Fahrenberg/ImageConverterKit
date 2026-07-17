@@ -5,12 +5,15 @@
 //  Created by Jean-Nicolas on 29.06.2026.
 //
 
+
+
 #if canImport(UIKit)
 import UIKit
 #elseif canImport(AppKit)
 import AppKit
 #endif
 import Extensions
+
 
 
 extension PlatformImage {
