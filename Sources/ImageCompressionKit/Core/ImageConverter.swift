@@ -269,8 +269,8 @@ extension ImageConverter {
         Logger.source.warning(
             """
             Exact compression range not reached.
-            Requested max. size: \(askedMaxSize)
-            Resulting size: \(bestResult.data.count)
+            Requested max. size: \(askedMaxSize.outputKBytes)
+            Resulting size: \(bestResult.data.count.outputKBytes)
             Compression quality: \(bestResult.quality)
             Attempts: \(attempts)
             """

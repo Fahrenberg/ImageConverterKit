@@ -50,6 +50,10 @@ extension Data {
         else { return nil }
         return jpegData.count <= self.count ? jpegData : nil
     }
+    
+    public func jpegData(askedMaxSize: Int) -> Data? {
+        return ImageConverter.convertData(from: self, to: .jpeg, with: askedMaxSize)
+    }
 }
 
 //MARK: PNG

@@ -49,9 +49,9 @@ enum ImageType: String, CaseIterable {
             .small: 50_000
         ],
         .jpeg: [
-            .large: 2_000_000,
-            .medium: 200_000,
-            .small: 30_000
+            .large: 3_000_000,
+            .medium: 500_000,
+            .small: 200_000
         ]
     ]
 

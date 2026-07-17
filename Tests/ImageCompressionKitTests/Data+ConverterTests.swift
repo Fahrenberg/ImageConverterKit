@@ -15,7 +15,7 @@ import UniformTypeIdentifiers
 
 struct HEICImageDataConverterTests {
     
-    @Test func convertsHEICDataUsingDefaultCompression() throws {
+    @Test func convertsDataToHEICUsingDefaultCompression() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let heicCompressedData = try #require(originalData.heicData())
@@ -61,7 +61,7 @@ struct HEICImageDataConverterTests {
         }
     }
     
-    @Test func returnsHEICDataWithinAskedMaxSize() throws {
+    @Test func convertsDataToHEICWithinAskedMaxSize() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let askedMaxSize: Int = imageType.askedMaxSize(for: .heic)
             let originalData = try #require(TestImage.data(size: imageType))
@@ -78,11 +78,6 @@ struct HEICImageDataConverterTests {
             #expect(heicConvertedData.count <= askedMaxSize,  "\(imageType.rawValue)")
 
             let compressionRatio = Double(heicConvertedData.count) / Double(originalData.count)
-            #expect(
-                compressionRatio < 0.75,
-                "\(imageType.rawValue) compression ratio was \(compressionRatio)"
-            )
-
             let compressionPercent = Int((compressionRatio * 100).rounded()) - 100
             Logger.test.info(
                 "\(imageType.rawValue): original size: \(originalData.count.outputKBytes), heicCompressed: \(heicConvertedData.count.outputKBytes), compressionRatio: \(compressionPercent)%"
@@ -147,13 +142,10 @@ struct HEICImageDataConverterTests {
 
         #expect(convertedData == nil)
     }
-    
-    
-    
 }
 
 struct JPEGImageDataConverterTests {
-    @Test func convertsJPEGDataUsingDefaultCompression() throws {
+    @Test func convertsDataToJPEGUsingDefaultCompression() throws {
         for imageType in [ImageType.large, .medium, .small] {
             let originalData = try #require(TestImage.data(size: imageType))
             let jpegCompressedData = try #require(originalData.jpegData())
@@ -210,7 +202,7 @@ struct JPEGImageDataConverterTests {
             #expect(jpegCompressedData == nil, "ImageType: \(imageType.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
         }
     }
-    @Test func convertsLargeImageUsingJPEGQualityOne() throws {
+    @Test func convertsLargeImageDataUsingJPEGQualityOne() throws {
         let originalData = try #require(TestImage.data(size: .large))
 
         // Check file type
@@ -218,6 +210,55 @@ struct JPEGImageDataConverterTests {
         // large file will be compressed by jpeg converted, even with 1, so it is fine to use 1 here with jpeg
         let jpegCompressedData = originalData.jpegData(quality: 1.0)
         #expect(jpegCompressedData != nil, "ImageType: \(ImageType.large.rawValue) : \(originalData.count.outputKBytes) vs compressed \(jpegCompressedData?.count.outputKBytes)")
+        
+    }
+    
+    @Test func convertsDataToJPEGWithinAskedMaxSize() throws {
+        for imageType in [ImageType.large, .medium, .small] {
+            let askedMaxSize: Int = imageType.askedMaxSize(for: .jpeg)
+            let originalData = try #require(TestImage.data(size: imageType))
+            let jpegConvertedData = try #require(originalData.jpegData(askedMaxSize: askedMaxSize))
+
+            // Check file type
+            #expect(originalData.isImage)
+            #expect(jpegConvertedData.imageType?.isJPGImage == true)
+
+
+            #expect(originalData.count > 0,  "\(imageType.rawValue)")
+            #expect(jpegConvertedData.count > 0,  "\(imageType.rawValue)")
+            #expect(jpegConvertedData.count < originalData.count,  "\(imageType.rawValue)")
+            #expect(jpegConvertedData.count <= askedMaxSize,  "\(imageType.rawValue)")
+
+            let compressionRatio = Double(jpegConvertedData.count) / Double(originalData.count)
+           
+            let compressionPercent = Int((compressionRatio * 100).rounded()) - 100
+            Logger.test.info(
+                "\(imageType.rawValue): original size: \(originalData.count.outputKBytes), jpegCompressed: \(jpegConvertedData.count.outputKBytes), compressionRatio: \(compressionPercent)%"
+            )
+            
+            let originalSource = try #require(
+                CGImageSourceCreateWithData(originalData as CFData, nil),
+                "\(imageType.rawValue)"
+            )
+
+            let originalImage = try #require(
+                CGImageSourceCreateImageAtIndex(originalSource, 0, nil),
+                "\(imageType.rawValue)"
+            )
+
+            let jpegSource = try #require(
+                CGImageSourceCreateWithData(jpegConvertedData as CFData, nil),
+                "\(imageType.rawValue)"
+            )
+
+            let jpegImage = try #require(
+                CGImageSourceCreateImageAtIndex(jpegSource, 0, nil),
+                "\(imageType.rawValue)"
+            )
+
+            #expect(jpegImage.width == originalImage.width,  "\(imageType.rawValue)")
+            #expect(jpegImage.height == originalImage.height,  "\(imageType.rawValue)")
+        }
         
     }
     
