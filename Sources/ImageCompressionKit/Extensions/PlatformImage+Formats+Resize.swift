@@ -1,5 +1,5 @@
 //
-//  PlatformImage Converter Adapter.swift
+//  PlatformImage Image Adapters.swift
 //  ImageCompressionKit
 //
 //  Adapter for a convience function to directly convert a  PlatformImage to image data using heic, png or jpeg conversion/compression

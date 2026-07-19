@@ -24,7 +24,7 @@ extension ImageConverter {
     ///
     /// - Returns: Converted data within the accepted tolerance when possible.
     ///   Otherwise, returns the closest result found during the search.
-    internal static func convertData(
+    public static func convertData(
         from imageData: Data,
         to type: UTType,
         with askedMaxSize: Int

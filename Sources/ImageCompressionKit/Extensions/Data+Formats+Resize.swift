@@ -10,7 +10,7 @@ import Extensions
 import ImageIO
 import UniformTypeIdentifiers
 
-//MARK: Quality
+//MARK: Converting  & Quality
 extension Data {
     public func heicData(quality: Double = ImageConverter.defaultHEICQuality) -> Data? {
         // HEIC specific, compressionQuality must be < 1, precondition stops runtime, assume programmer error
@@ -65,3 +65,13 @@ extension Data {
         return ImageConverter.convertData(from: self, to: .jpeg, with: askedMaxSize)
     }
 }
+
+
+//MARK: Resize
+extension Data {
+    public func resizeImage(to targetSize: CGSize) -> Data? {
+        return ImageResizer.resizedData(from: self, to: targetSize)
+    }
+    
+}
+

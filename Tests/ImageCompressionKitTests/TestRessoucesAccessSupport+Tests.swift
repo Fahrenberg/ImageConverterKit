@@ -27,7 +27,7 @@ extension Logger {
 }
 
 enum ImageType: String, CaseIterable {
-    case large, medium, small, small_center, small_left, small_right
+    case large, medium, small, small_center, small_left, small_right, JPG_Scan
     
     var imageAlignment: PlatformImage.ImageAlignment {
         switch self {
@@ -123,3 +123,37 @@ struct TestImageAccess {
     
 }
 
+extension Data {
+    /// Convencience function to write PlatformImage to temporary directory als PNG file
+    ///
+    /// Use URL to get file. Discardable when only log needed for testing.
+    ///
+    @discardableResult
+    public func writeToDisk(filename: String) throws -> URL {
+        let testDir = try Data.tempDirectory()
+        let fileURL: URL
+        // write image to disk for preview
+        if #available(iOS 16.0, macOS 13.0, *)  {
+            fileURL = testDir.appending(path: "\(filename)")
+        } else {
+            fileURL = testDir.appendingPathComponent("\(filename)")
+        }
+       
+        try self.write(to: fileURL)
+        Logger.test.info("Saved Data to URL:\n\(fileURL.absoluteString)")
+        return fileURL
+    }
+    
+    public static func tempDirectory() throws -> URL {
+        let testDir: URL
+        let subDirPath = Bundle.main.bundleIdentifier ?? "main"
+        if #available(iOS 16.0, macOS 13.0, *) {
+            testDir = FileManager().temporaryDirectory.appending(path: subDirPath)
+        } else {
+            testDir = FileManager().temporaryDirectory.appendingPathComponent(subDirPath)
+        }
+        try FileManager.default.createDirectory(at: testDir, withIntermediateDirectories: true)
+        return testDir
+    }
+    
+}
