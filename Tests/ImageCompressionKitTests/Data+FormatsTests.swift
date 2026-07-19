@@ -305,3 +305,28 @@ struct PNGImageDataConverterTests {
         }
     }
 }
+
+struct DataImageConverterTests {
+    @Test func returnsSameImageDataTypeAndSizeWithinAskedMaxSize() throws {
+        let imageDataLarge = try #require(TestImage.data(size: .medium))
+        let newImageDataSize = imageDataLarge.count / 2
+        let resizedImageData = try #require(imageDataLarge.changeImageDataSize(to: newImageDataSize))
+        #expect(resizedImageData.imageType == imageDataLarge.imageType)
+        let largeCGImage = try #require(imageDataLarge.platformCGImage)
+        let resizedCGImage = try #require(resizedImageData.platformCGImage)
+        #expect(largeCGImage.width == resizedCGImage.width)
+        #expect(largeCGImage.height == resizedCGImage.height)
+    }
+    
+    @Test func returnsNilForWrongImageType() throws {
+        let pdfData = try #require(TestImage.data(filename: "SamplePDF.pdf"))
+        #expect(!pdfData.isImage)
+        let imageDataSize = pdfData.count / 2
+        #expect(pdfData.changeImageDataSize(to: imageDataSize) == nil)
+        #expect(pdfData.heicData() == nil)
+        #expect(pdfData.jpegData() == nil)
+        #expect(pdfData.pngData() == nil)
+        
+    }
+    
+}

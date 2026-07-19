@@ -55,7 +55,15 @@ extension Data {
     
 }
 
-//MARK: TargetSize
+// MARK: Target Size - keep ImageType
+extension Data {
+    public func changeImageDataSize(to askedMaxSize: Int) -> Data? {
+        guard let imageType else { return nil }
+        return ImageConverter.convertData(from: self, to: imageType, with: askedMaxSize)
+    }
+}
+
+//MARK: Converting & TargetSize
 extension Data {
     public func heicData(askedMaxSize: Int) -> Data? {
         return ImageConverter.convertData(from: self, to: .heic, with: askedMaxSize)

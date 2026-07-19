@@ -51,5 +51,15 @@ struct ImageDataResizeTests {
     }
     
     
+    @Test func returnsNilForWrongImageType() throws {
+        let pdfData = try #require(TestImage.data(filename: "SamplePDF.pdf"))
+        #expect(!pdfData.isImage)
+        let targetSize = CGSize(width: 2000, height: 1000)
+        let newTargetSizePDFData = pdfData.resizeImage(to: targetSize)
+        #expect(newTargetSizePDFData == nil)
+        
+    }
+    
+    
 }
 

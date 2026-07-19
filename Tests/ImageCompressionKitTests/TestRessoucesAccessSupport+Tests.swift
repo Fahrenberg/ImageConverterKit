@@ -82,6 +82,16 @@ struct TestImage {
         let data = try? Data(contentsOf: imageURL)
         return data
     }
+    
+    static func data(filename: String) -> Data? {
+        let bundle = Bundle.module
+        guard let dataURL = bundle.url(forResource: filename, withExtension: nil) else {
+            return nil
+        }
+        let data = try? Data(contentsOf: dataURL)
+        return data
+    }
+    
 }
 
 struct TestImageAccess {
