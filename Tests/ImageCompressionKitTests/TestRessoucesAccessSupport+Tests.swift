@@ -29,7 +29,7 @@ extension Logger {
 enum ImageType: String, CaseIterable {
     case large, medium, small, small_center, small_left, small_right, JPG_Scan
     
-    var imageAlignment: ImageAlignment {
+    var imageAlignment: ImageConverter.ImageAlignment {
         switch self {
         case .small_center:
             return .center

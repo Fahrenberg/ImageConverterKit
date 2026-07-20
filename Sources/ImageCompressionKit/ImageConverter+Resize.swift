@@ -9,40 +9,9 @@ import CoreGraphics
 import Foundation
 import Extensions
 
-public enum ImageAlignment {
-    case left
-    case center
-    case right
-}
 
-public enum ImageBackground {
-    case transparent
-    case white
-    case black
-    case color(CGColor)
 
-    internal var cgColor: CGColor? {
-        switch self {
-        case .transparent:
-            nil
 
-        case .white:
-            CGColor(
-                gray: 1,
-                alpha: 1
-            )
-
-        case .black:
-            CGColor(
-                gray: 0,
-                alpha: 1
-            )
-
-        case .color(let color):
-            color
-        }
-    }
-}
 
 extension ImageConverter {
     static func resizedData(
