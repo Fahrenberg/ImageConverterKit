@@ -34,11 +34,11 @@ extension PlatformImage {
         return jpegData
     }
     
-// Extensions offers an pngData() converter, remove first from Extension
-//    public func pngData() -> Data? {
-//        let data = Data()
-//        return data
-//    }
+    // Extensions offers an pngData() converter, remove first from Extension
+    //    public func pngData() -> Data? {
+    //        let data = Data()
+    //        return data
+    //    }
 }
 
 
@@ -61,5 +61,35 @@ extension PlatformImage {
               let jpegData = data.jpegData(askedMaxSize: askedMaxSize)
         else { return nil }
         return jpegData
+    }
+}
+
+
+//MARK: Resize
+extension PlatformImage {
+    /// Resizes the platform image
+    ///
+    /// - Parameters:
+    ///   - targetSize: The output canvas size in pixels.
+    ///   - background: The background used for uncovered canvas areas.
+    ///
+    /// - Returns: The resized platform image , or `nil` if the
+    ///   operation fails.
+    public func resized(
+        to targetSize: CGSize,
+        background: ImageBackground = .white
+    ) -> PlatformImage? {
+        guard
+            let cgImage = platformCGImage,
+            let resizedCGImage = ImageResizer.resizedCGImage(
+                from: cgImage,
+                toPixelSize: targetSize,
+                background: background
+            )
+        else {
+            return nil
+        }
+        
+        return resizedCGImage.platformImage
     }
 }
