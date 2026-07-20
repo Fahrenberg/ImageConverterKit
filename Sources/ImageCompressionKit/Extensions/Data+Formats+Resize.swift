@@ -77,7 +77,7 @@ extension Data {
 
 //MARK: Resize
 extension Data {
-    public func resizeImage(to targetSize: CGSize, background: ImageBackground = .white) -> Data? {
+    public func resizeImage(to targetSize: CGSize, background: ImageBackground = ImageResizer.defaultBackground) -> Data? {
         return ImageResizer.resizedData(from: self, to: targetSize, background: background)
     }
     
