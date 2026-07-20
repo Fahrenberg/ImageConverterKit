@@ -99,10 +99,8 @@ extension ImageConverter {
             size: canvasSize
         )
 
-        let colorSpace =
-            image.colorSpace
-            ?? CGColorSpace(name: CGColorSpace.sRGB)
-            ?? CGColorSpaceCreateDeviceRGB()
+        guard let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
+        else { return nil }
 
         let bitmapInfo: CGBitmapInfo = [
             .byteOrder32Big,
