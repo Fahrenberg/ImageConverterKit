@@ -1,4 +1,4 @@
-# ImageCompressionKit
+# ImageConverterKit
 
 ![](https://img.shields.io/badge/iOS-15-blue)
 ![](https://img.shields.io/badge/macOS-11_(BigSur)_|_MacCatalyst-green)

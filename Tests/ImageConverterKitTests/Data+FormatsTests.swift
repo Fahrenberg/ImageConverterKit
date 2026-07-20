@@ -11,7 +11,7 @@ import Extensions
 import ImageIO
 import UniformTypeIdentifiers
 
-@testable import ImageCompressionKit
+@testable import ImageConverterKit
 
 struct HEICImageDataConverterTests {
     

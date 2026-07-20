@@ -9,7 +9,7 @@ import Testing
 import OSLog
 import Extensions
 
-@testable import ImageCompressionKit
+@testable import ImageConverterKit
 
 
 struct PlatformImageResizerTests {

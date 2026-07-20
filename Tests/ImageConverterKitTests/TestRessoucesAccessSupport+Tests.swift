@@ -10,7 +10,7 @@ import OSLog
 import Extensions
 import UniformTypeIdentifiers
 
-@testable import ImageCompressionKit
+@testable import ImageConverterKit
 
 #if canImport(UIKit)
 import UIKit

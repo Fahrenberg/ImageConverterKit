@@ -3,13 +3,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "ImageCompressionKit",
+    name: "ImageConverterKit",
     platforms: [.iOS(.v15), .macOS(.v11)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "ImageCompressionKit",
-            targets: ["ImageCompressionKit"])
+            name: "ImageConverterKit",
+            targets: ["ImageConverterKit"])
     ],
     
     dependencies: [
@@ -21,20 +21,20 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Spikes",
-            dependencies: ["ImageCompressionKit", "Extensions"],
+            dependencies: ["ImageConverterKit", "Extensions"],
             path: "Spikes",
             resources: [
                 .process("Ressources"),
             ]
         ),
         .target(
-            name: "ImageCompressionKit",
+            name: "ImageConverterKit",
             dependencies: ["Extensions"]
         ),
         .testTarget(
-            name: "ImageCompressionKitTests",
+            name: "ImageConverterKitTests",
             dependencies: [
-                "ImageCompressionKit",
+                "ImageConverterKit",
                 "CollectionConcurrencyKit"
             ],
             resources: [

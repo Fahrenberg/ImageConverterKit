@@ -5,9 +5,10 @@
 //
     
 import XCTest
-@testable import ImageCompressionKit
 import OSLog
 import CollectionConcurrencyKit
+
+@testable import ImageConverterKit
 
 final class ImageCompressionPerformanceTests: XCTestCase {
    

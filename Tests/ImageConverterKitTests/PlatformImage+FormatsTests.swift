@@ -8,7 +8,7 @@
 import Testing
 import OSLog
 
-@testable import ImageCompressionKit
+@testable import ImageConverterKit
 
 struct PlatformImageConverterTests {
     
