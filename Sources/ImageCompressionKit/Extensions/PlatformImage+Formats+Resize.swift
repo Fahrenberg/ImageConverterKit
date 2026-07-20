@@ -78,7 +78,7 @@ extension PlatformImage {
     public func resized(to targetSize: CGSize, background: ImageBackground = .white) -> PlatformImage? {
         guard
             let cgImage = platformCGImage,
-            let resizedCGImage = ImageResizer.resizedCGImage(
+            let resizedCGImage = ImageConverter.resizedCGImage(
                 from: cgImage,
                 toPixelSize: targetSize,
                 background: background

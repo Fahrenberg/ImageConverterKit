@@ -211,7 +211,7 @@ struct ImageDataResizeTests {
         )
 
         let renderedCGImage = try #require(
-            ImageResizer.resizedCGImage(
+            ImageConverter.resizedCGImage(
                 from: sourceImage,
                 toPixelSize: targetSize,
                 background: .white
@@ -283,7 +283,7 @@ struct ImageDataResizeTests {
         )
 
         let renderedCGImage = try #require(
-            ImageResizer.resizedCGImage(
+            ImageConverter.resizedCGImage(
                 from: sourceImage,
                 toPixelSize: targetSize,
                 background: .color(oliveColor)
@@ -408,7 +408,7 @@ struct ImageDataResizeTests {
 
         // Render once in the source image's color space.
         let renderedCGImage = try #require(
-            ImageResizer.resizedCGImage(
+            ImageConverter.resizedCGImage(
                 from: originalCGImage,
                 toPixelSize: targetSize,
                 background: .color(oliveColor)

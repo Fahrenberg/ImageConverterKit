@@ -9,11 +9,6 @@ import CoreGraphics
 import Foundation
 import Extensions
 
-public enum ImageResizer {
-    public static let defaultAlignment: ImageAlignment = .center
-    public static let defaultBackground: ImageBackground = .white
-}
-
 public enum ImageAlignment {
     case left
     case center
@@ -49,7 +44,7 @@ public enum ImageBackground {
     }
 }
 
-extension ImageResizer {
+extension ImageConverter {
     static func resizedData(
         from imageData: Data,
         to targetSize: CGSize,
