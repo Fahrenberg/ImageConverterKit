@@ -1,109 +1,210 @@
 # ImageCompressionKit
-![](https://img.shields.io/badge/iOS%20:-15-blue)
-![](https://img.shields.io/badge/macOS%20:-11_(BigSur)%20|%20MacCatalyst-green)
+
+![](https://img.shields.io/badge/iOS-15-blue)
+![](https://img.shields.io/badge/macOS-11_(BigSur)_|_MacCatalyst-green)
 ![GitHub Release](https://img.shields.io/github/v/release/Fahrenberg/ImageCompressionKit)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Fahrenberg/ImageCompressionKit)
 
+ImageCompressionKit is a lightweight, platform-independent image conversion library built on top of Apple's **ImageIO** framework.
 
-## Data Image Converter
+It provides:
 
-Converts and compresses image `Data` using device/platform independent ImageIO.
+- Image format conversion
+- HEIC, JPEG and PNG encoding
+- Image resizing
+- Image alignment
+- Background filling
+- Target file size compression
+- Image type detection
 
-| Converter<br> Method | Default<br> Compression<br> Quality | Usage |
-| ------------------ | :------------------------------: | ----- |
-| HEIC | `0.75` | `.heicData()` |
-| JPEG | `0.65` | `.jpegData()` |
-| PNG | `none` | `.pngData()` |
+The library operates directly on `Data` and `CGImage`, making it independent from UIKit and AppKit. Convenience APIs for `PlatformImage` (`UIImage` / `NSImage`) are included.
 
-Notes:
-- The default HEIC compression quality (`0.75`) matches the behavior of the native `UIImage.heicData()` API introduced in iOS 17.
-- Use HEIC only with [supported devices for HEIC](https://support.apple.com/en-us/HT207022). Very efficient but slower to compress than jpg.
+---
 
-- HEIC and JPEG allow to overwrite default compression quality with:
-````
-.heicData(quality: Double)
-.jpegData(quality: Double)
-````
-## Image Data Checks
-#### `Data.imageType`
+# Quick Start
 
-Returns the image `UTType` if the `Data` contains a supported image; otherwise returns `nil`.
+The following example demonstrates the most common workflow:
 
-See Apple's [system-declared image UTTypes](https://developer.apple.com/documentation/uniformtypeidentifiers/uttype-swift.struct/image) for the supported image formats such as JPEG, PNG, HEIC, GIF, TIFF, and RAW.
+1. Resize an image while preserving its aspect ratio.
+2. Fill any remaining space with a white background.
+3. Center the image.
+4. Convert it to HEIC.
+5. Compress it to approximately **300 KB**.
 
 ```swift
-extension Data {
-    public var imageType: UTType?
-}
-````
+let resized = imageData.resizeImage(
+    to: CGSize(width: 1200, height: 800),
+    background: .white,
+    alignment: .center
+)
 
-#### `UTType` 
-
-Convenience wrappers to check different image formats, based on UTType
-
-````
-extension UTType {
-    public var isImage: Bool 
-    public var isHEICImage: Bool 
-    public var isJPGImage: Bool
-    public var isPNGImage: Bool
-}
-````
-
-#### Usage example:
-`````
-#expect(heicCompressedData.imageType?.isHEICImage == true)
-`````
-
-## PlatformImage+Converter
-
-Convenience wrapper to compress `PlatformImage` directly into a `Data`, uses [PlatformImage](https://github.com/Fahrenberg/Extensions?tab=readme-ov-file#platformimage) typealias for UIImage or NSImage. See [Extensions](https://github.com/Fahrenberg/Extensions?tab=readme-ov-file#swift---extensions---library)
-
-### HEIC Converter
-
-Notes: 
-- For compress multiple images use **sync** not async, it's faster...
-- Compress an UIImage or NSImage (Extension) to data.
-- Very efficient but slower to compress than jpg
-
-#### Compress to  +/- 10% of askedMaxSize
-```swift
-public func heicData(askedMaxSize: UInt64 = .max) -> Data? 
-```
-#### Compress by setting compression quality
-```swift
-public func heicData(quality: Double) -> Data?
+let heic = resized?.heicData(
+    askedMaxSize: 300_000
+)
 ```
 
-
-### JPG Converter
-
-Notes:
-- For compress multiple images use `Task {}` async (50% faster) rather than sync.
-- Fallback solution to compress UIImage or NSImage.
-- Use it if HEIC Compressor not available (old iPhones).
-- Less 10x efficient than HEIC compression. Faster to compress. 
-
-#### Compress to  +/- 10% of askedMaxSize
-```swift
-public func jpgData(askedMaxSize: UInt64 = .max) -> Data? 
-```
-#### Compress by setting compression quality
-```swift
-public func jpgData(quality: Double) -> Data?
-```
-
-See [different approaches](https://stackoverflow.com/questions/29726643/how-to-compress-of-reduce-the-size-of-an-image-before-uploading-to-parse-as-pffi)
-
-
-### Resize Image
-
-Resize original image to `CGSize`. Does not compress image.</br>
-Optional dpi and image alignment within targetSize box.
+Or, starting from a `PlatformImage`:
 
 ```swift
-public func resized(to targetSize: CGSize,
-                        dpi: CGFloat = 72.0,
-                        alignment: ImageAlignment = .center) -> PlatformImage?
+let resized = image.resized(
+    to: CGSize(width: 1200, height: 800),
+    alignment: .center
+)
+
+let heic = resized?.heicData(
+    askedMaxSize: 300_000
+)
 ```
 
+In just a few lines, ImageCompressionKit can resize an image, apply a background, preserve its aspect ratio, convert it to a different format, and optimize it for a target file size.
+
+---
+
+# Features
+
+- ✅ Platform independent (ImageIO)
+- ✅ HEIC, JPEG and PNG conversion
+- ✅ Resize images while preserving aspect ratio
+- ✅ Left, center or right image alignment
+- ✅ Transparent, white, black or custom background
+- ✅ Preserve the original image format when resizing
+- ✅ Compress images to an approximate target file size
+- ✅ Automatic alpha removal for JPEG and HEIC
+- ✅ Detect image formats using `UTType`
+
+---
+
+# Data Conversion
+
+Convert image `Data` into another image format.
+
+| Method | Default Quality | Description |
+|---------|:---------------:|-------------|
+| `.heicData()` | `0.75` | Converts to HEIC |
+| `.jpgData()` | `0.65` | Converts to JPEG |
+| `.pngData()` | Lossless | Converts to PNG |
+
+Custom quality:
+
+```swift
+imageData.heicData(quality: 0.85)
+imageData.jpgData(quality: 0.50)
+```
+
+Compress to target size:
+
+```swift
+imageData.heicData(askedMaxSize: 300_000)
+imageData.jpgData(askedMaxSize: 300_000)
+```
+
+---
+
+# Resize Images
+
+```swift
+let resized = imageData.resizeImage(
+    to: CGSize(width: 1200, height: 800)
+)
+```
+
+The resized image automatically preserves the original image format.
+
+---
+
+# ImageBackground
+
+Supported backgrounds:
+
+```swift
+.transparent
+.white
+.black
+.color(CGColor)
+```
+
+Example:
+
+```swift
+let resized = imageData.resizeImage(
+    to: targetSize,
+    background: .white
+)
+```
+
+---
+
+# ImageAlignment
+
+```swift
+.left
+.center
+.right
+```
+
+Example:
+
+```swift
+let resized = imageData.resizeImage(
+    to: targetSize,
+    alignment: .left
+)
+```
+
+---
+
+# PlatformImage Convenience API
+
+```swift
+image.heicData()
+image.jpgData()
+image.pngData()
+
+image.heicData(quality: 0.8)
+image.jpgData(quality: 0.6)
+
+image.heicData(askedMaxSize: 500_000)
+image.jpgData(askedMaxSize: 500_000)
+
+image.resized(
+    to: CGSize(width: 800, height: 600),
+    alignment: .center
+)
+```
+
+---
+
+# Detect Image Types
+
+```swift
+let type = imageData.imageType
+```
+
+Convenience properties:
+
+```swift
+type?.isImage
+type?.isHEICImage
+type?.isJPGImage
+type?.isPNGImage
+```
+
+---
+
+# Alpha Handling
+
+JPEG and HEIC do not support transparency. ImageCompressionKit automatically removes alpha channels when required before encoding. PNG preserves transparency.
+
+---
+
+# Requirements
+
+- iOS 15+
+- macOS 11+
+- Mac Catalyst
+
+---
+
+# Implementation
+
+The library is built on Apple's **ImageIO** and **CoreGraphics** frameworks. Its core APIs operate on `Data` and `CGImage`, while `PlatformImage` extensions provide convenient UIKit/AppKit integration.
