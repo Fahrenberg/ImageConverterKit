@@ -27,21 +27,8 @@ extension Logger {
 }
 
 enum ImageType: String, CaseIterable {
-    case large, medium, small, small_center, small_left, small_right, JPG_Scan
-    
-    var imageAlignment: ImageConverter.ImageAlignment {
-        switch self {
-        case .small_center:
-            return .center
-        case .small_left:
-            return .left
-        case .small_right:
-            return .right
-        default:
-            return .center
-        }
-    }
-    
+    case large, medium, small, JPG_Scan
+   
     private static let maxSizes: [UTType: [ImageType: Int]] = [
         .heic: [
             .large: 2_000_000,
