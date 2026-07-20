@@ -17,133 +17,8 @@ import Extensions
 
 struct ImageDataResizeTests {
     
-    @Test(
-        arguments: [
-            CGSize(width: 0, height: 100),
-            CGSize(width: 100, height: 0),
-            CGSize(width: 0, height: 0),
-            CGSize(width: -100, height: 100),
-            CGSize(width: 100, height: -100)
-        ]
-    )
-    func returnsNilForInvalidTargetSize(
-        targetSize: CGSize
-    ) throws {
-        let originalData = try #require(
-            TestImage.data(size: .JPG_Scan)
-        )
-
-        let resizedData = originalData.resizeImage(
-            to: targetSize
-        )
-
-        #expect(resizedData == nil)
-    }
-    
-    @Test
-    func preservesTransparentPaddingWhenEncodingPNG() throws {
-        let sourceImage = try #require(
-            makeSRGBImage(
-                width: 100,
-                height: 100
-            )
-        )
-
-        let sourceData = try #require(
-            ImageConverter.convertData(
-                from: sourceImage,
-                type: .png
-            )
-        )
-
-        let targetSize = CGSize(
-            width: 200,
-            height: 100
-        )
-
-        let resizedData = try #require(
-            sourceData.resizeImage(
-                to: targetSize,
-                background: .transparent
-            )
-        )
-
-        #expect(resizedData.imageType == .png)
-
-        let resizedImage = try #require(
-            resizedData.platformCGImage
-        )
-
-        let samplePoint = try #require(
-            paddingSamplePoint(
-                imageSize: sourceImage.pixelSize,
-                canvasSize: targetSize
-            )
-        )
-
-        let actualColor = try #require(
-            resizedImage.rgbaColor(
-                at: samplePoint
-            )
-        )
-
-        #expect(actualColor.alpha == 0)
-    }
-    
-    @Test
-    func preservesPixelDimensionsWhenTargetSizeEqualsSourceSize() throws {
-        let originalData = try #require(
-            TestImage.data(size: .JPG_Scan)
-        )
-
-        let originalImage = try #require(
-            originalData.platformCGImage
-        )
-
-        let resizedData = try #require(
-            originalData.resizeImage(
-                to: originalImage.pixelSize
-            )
-        )
-
-        let resizedImage = try #require(
-            resizedData.platformCGImage
-        )
-
-        #expect(
-            resizedImage.pixelSize ==
-            originalImage.pixelSize
-        )
-
-        #expect(
-            resizedData.imageType ==
-            originalData.imageType
-        )
-    }
-    
-    @Test
-    func returnsNilForCorruptedImageData() {
-        let corruptedJPGData = Data([
-            0xFF,
-            0xD8,
-            0xFF,
-            0xE0,
-            0x00,
-            0x10
-        ])
-
-        let result = corruptedJPGData.resizeImage(
-            to: CGSize(
-                width: 100,
-                height: 100
-            )
-        )
-
-        #expect(result == nil)
-    }
-    
-    @Test
-    func halvesJPGImageSize() throws {
+ 
+    @Test func halvesJPGImageSize() throws {
         let originalData = try #require(
             TestImage.data(size: .JPG_Scan)
         )
@@ -155,7 +30,31 @@ struct ImageDataResizeTests {
         let targetSize = originalSize * 0.5
 
         let resizedImageData = try #require(
-            originalData.resizeImage(to: targetSize)
+            originalData.resizeImageData(to: targetSize)
+        )
+
+        #expect(resizedImageData.imageType == originalData.imageType)
+
+        let resultCGImage = try #require(
+            resizedImageData.platformCGImage
+        )
+
+        #expect(resultCGImage.pixelSize == targetSize)
+    }
+
+    @Test func doublesJPGImageSize() throws {
+        let originalData = try #require(
+            TestImage.data(size: .JPG_Scan)
+        )
+        let originalCGImage = try #require(
+            originalData.platformCGImage
+        )
+        let originalSize = originalCGImage.pixelSize
+
+        let targetSize = originalSize * 2
+
+        let resizedImageData = try #require(
+            originalData.resizeImageData(to: targetSize)
         )
 
         #expect(resizedImageData.imageType == originalData.imageType)
@@ -168,30 +67,15 @@ struct ImageDataResizeTests {
     }
 
     @Test
-    func doublesJPGImageSize() throws {
-        let originalData = try #require(
-            TestImage.data(size: .JPG_Scan)
-        )
-        let originalCGImage = try #require(
-            originalData.platformCGImage
-        )
-        let originalSize = originalCGImage.pixelSize
-
-        let targetSize = originalSize * 2
-
-        let resizedImageData = try #require(
-            originalData.resizeImage(to: targetSize)
-        )
-
-        #expect(resizedImageData.imageType == originalData.imageType)
-
-        let resultCGImage = try #require(
-            resizedImageData.platformCGImage
-        )
-
-        #expect(resultCGImage.pixelSize == targetSize)
+    func alignmentLeftImageResized() throws {
+        try assertImageAlignment(.left)
     }
 
+    @Test
+    func alignmentRightImageResized() throws {
+        try assertImageAlignment(.right)
+    }
+    
     // MARK: - Exact rendering tests
 
     @Test
@@ -326,10 +210,9 @@ struct ImageDataResizeTests {
         )
     }
 
-    // MARK: - JPEG integration tests
+// MARK: - JPEG integration tests
 
-    @Test
-    func preservesWhiteBackgroundApproximatelyWhenEncodingJPG() throws {
+    @Test func preservesWhiteBackgroundApproximatelyWhenEncodingJPG() throws {
         let originalData = try #require(
             TestImage.data(size: .JPG_Scan)
         )
@@ -344,7 +227,7 @@ struct ImageDataResizeTests {
         )
 
         let resizedImageData = try #require(
-            originalData.resizeImage(to: targetSize)
+            originalData.resizeImageData(to: targetSize)
         )
 
         #expect(resizedImageData.imageType == originalData.imageType)
@@ -377,8 +260,7 @@ struct ImageDataResizeTests {
         )
     }
 
-    @Test
-    func preservesOliveBackgroundApproximatelyWhenEncodingJPG() throws {
+    @Test func preservesOliveBackgroundApproximatelyWhenEncodingJPG() throws {
         let originalData = try #require(
             TestImage.data(size: .JPG_Scan)
         )
@@ -433,7 +315,7 @@ struct ImageDataResizeTests {
 
         // Actual public Data resizing path, encoded back to JPEG.
         let resizedJPGData = try #require(
-            originalData.resizeImage(
+            originalData.resizeImageData(
                 to: targetSize,
                 background: .color(oliveColor)
             )
@@ -457,8 +339,8 @@ struct ImageDataResizeTests {
         )
     }
 
-    @Test
-    func returnsNilForWrongImageType() throws {
+//MARK: - Edge Cases
+    @Test func returnsNilForWrongImageType() throws {
         let pdfData = try #require(
             TestImage.data(filename: "SamplePDF.pdf")
         )
@@ -470,12 +352,135 @@ struct ImageDataResizeTests {
             height: 1_000
         )
 
-        let resizedPDFData = pdfData.resizeImage(
+        let resizedPDFData = pdfData.resizeImageData(
             to: targetSize
         )
 
         #expect(resizedPDFData == nil)
     }
+    
+    @Test(
+        arguments: [
+            CGSize(width: 0, height: 100),
+            CGSize(width: 100, height: 0),
+            CGSize(width: 0, height: 0),
+            CGSize(width: -100, height: 100),
+            CGSize(width: 100, height: -100)
+        ]
+    )
+    func returnsNilForInvalidTargetSize(
+        targetSize: CGSize
+    ) throws {
+        let originalData = try #require(
+            TestImage.data(size: .JPG_Scan)
+        )
+
+        let resizedData = originalData.resizeImageData(
+            to: targetSize
+        )
+
+        #expect(resizedData == nil)
+    }
+    
+    @Test func preservesTransparentPaddingWhenEncodingPNG() throws {
+        let sourceImage = try #require(
+            makeSRGBImage(
+                width: 100,
+                height: 100
+            )
+        )
+
+        let sourceData = try #require(
+            ImageConverter.convertData(
+                from: sourceImage,
+                type: .png
+            )
+        )
+
+        let targetSize = CGSize(
+            width: 200,
+            height: 100
+        )
+
+        let resizedData = try #require(
+            sourceData.resizeImageData(
+                to: targetSize,
+                background: .transparent
+            )
+        )
+
+        #expect(resizedData.imageType == .png)
+
+        let resizedImage = try #require(
+            resizedData.platformCGImage
+        )
+
+        let samplePoint = try #require(
+            paddingSamplePoint(
+                imageSize: sourceImage.pixelSize,
+                canvasSize: targetSize
+            )
+        )
+
+        let actualColor = try #require(
+            resizedImage.rgbaColor(
+                at: samplePoint
+            )
+        )
+
+        #expect(actualColor.alpha == 0)
+    }
+    
+    @Test func preservesPixelDimensionsWhenTargetSizeEqualsSourceSize() throws {
+        let originalData = try #require(
+            TestImage.data(size: .JPG_Scan)
+        )
+
+        let originalImage = try #require(
+            originalData.platformCGImage
+        )
+
+        let resizedData = try #require(
+            originalData.resizeImageData(
+                to: originalImage.pixelSize
+            )
+        )
+
+        let resizedImage = try #require(
+            resizedData.platformCGImage
+        )
+
+        #expect(
+            resizedImage.pixelSize ==
+            originalImage.pixelSize
+        )
+
+        #expect(
+            resizedData.imageType ==
+            originalData.imageType
+        )
+    }
+    
+    @Test func returnsNilForCorruptedImageData() {
+        let corruptedJPGData = Data([
+            0xFF,
+            0xD8,
+            0xFF,
+            0xE0,
+            0x00,
+            0x10
+        ])
+
+        let result = corruptedJPGData.resizeImageData(
+            to: CGSize(
+                width: 100,
+                height: 100
+            )
+        )
+
+        #expect(result == nil)
+    }
+    
 }
 
 // MARK: - Test helpers
@@ -671,6 +676,126 @@ private func paddingSamplePoint(
 
     return nil
 }
+
+private func assertImageAlignment(
+    _ alignment: ImageConverter.ImageAlignment
+) throws {
+    let sourceImage = try #require(
+        makeSRGBImage(
+            width: 100,
+            height: 100
+        )
+    )
+
+    let sourceData = try #require(
+        ImageConverter.convertData(
+            from: sourceImage,
+            type: .png
+        )
+    )
+
+    let decodedSourceImage = try #require(
+        sourceData.platformCGImage
+    )
+
+    let expectedImageColor = try #require(
+        decodedSourceImage.rgbaColor(
+            at: CGPoint(
+                x: decodedSourceImage.width / 2,
+                y: decodedSourceImage.height / 2
+            )
+        )
+    )
+
+    let targetSize = CGSize(
+        width: 200,
+        height: 100
+    )
+
+    let resizedData = try #require(
+        sourceData.resizeImageData(
+            to: targetSize,
+            alignment: alignment,
+            background: .white
+        )
+    )
+
+    let resizedImage = try #require(
+        resizedData.platformCGImage
+    )
+
+    let samplePoints = alignmentSamplePoints(
+        alignment: alignment,
+        canvasSize: targetSize
+    )
+
+    let actualImageColor = try #require(
+        resizedImage.rgbaColor(
+            at: samplePoints.image
+        )
+    )
+
+    let actualPaddingColor = try #require(
+        resizedImage.rgbaColor(
+            at: samplePoints.padding
+        )
+    )
+
+    #expect(
+        actualImageColor == expectedImageColor
+    )
+
+    #expect(
+        actualPaddingColor == RGBAColor(
+            red: 255,
+            green: 255,
+            blue: 255,
+            alpha: 255
+        )
+    )
+}
+
+private func alignmentSamplePoints(
+    alignment: ImageConverter.ImageAlignment,
+    canvasSize: CGSize
+) -> (
+    image: CGPoint,
+    padding: CGPoint
+) {
+    let leftPoint = CGPoint(
+        x: canvasSize.width * 0.25,
+        y: canvasSize.height * 0.5
+    )
+
+    let rightPoint = CGPoint(
+        x: canvasSize.width * 0.75,
+        y: canvasSize.height * 0.5
+    )
+
+    switch alignment {
+    case .left:
+        return (
+            image: leftPoint,
+            padding: rightPoint
+        )
+
+    case .right:
+        return (
+            image: rightPoint,
+            padding: leftPoint
+        )
+
+    case .center:
+        return (
+            image: CGPoint(
+                x: canvasSize.width * 0.5,
+                y: canvasSize.height * 0.5
+            ),
+            padding: leftPoint
+        )
+    }
+}
+
 
 private func makeSRGBImage(
     width: Int,

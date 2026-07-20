@@ -75,14 +75,16 @@ extension PlatformImage {
     ///
     /// - Returns: The resized platform image , or `nil` if the
     ///   operation fails.
-    public func resized(to targetSize: CGSize,
-                        background: ImageConverter.ImageBackground = .white
+    public func resize(to targetSize: CGSize,
+                        alignment: ImageConverter.ImageAlignment = ImageConverter.defaultAlignment,
+                        background: ImageConverter.ImageBackground = ImageConverter.defaultBackground
     ) -> PlatformImage? {
         guard
             let cgImage = platformCGImage,
             let resizedCGImage = ImageConverter.resizedCGImage(
                 from: cgImage,
                 toPixelSize: targetSize,
+                alignment: alignment,
                 background: background
             )
         else {

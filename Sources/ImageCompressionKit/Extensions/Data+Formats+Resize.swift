@@ -77,10 +77,13 @@ extension Data {
 
 //MARK: Resize
 extension Data {
-    public func resizeImage(to targetSize: CGSize,
+    public func resizeImageData(to targetSize: CGSize,
+                            alignment: ImageConverter.ImageAlignment = ImageConverter.defaultAlignment,
                             background: ImageConverter.ImageBackground = ImageConverter.defaultBackground
     ) -> Data? {
-        return ImageConverter.resizedData(from: self, to: targetSize, background: background)
+        return ImageConverter.resizedData(from: self, to: targetSize,
+                                          alignment: alignment,
+                                          background: background)
     }
     
 }

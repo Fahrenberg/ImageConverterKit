@@ -9,10 +9,6 @@ import CoreGraphics
 import Foundation
 import Extensions
 
-
-
-
-
 extension ImageConverter {
     static func resizedData(
         from imageData: Data,
