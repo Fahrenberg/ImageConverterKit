@@ -4,12 +4,10 @@
 //
 //  Created by Jean-Nicolas on 17.07.2026.
 //
-import Foundation
-import UniformTypeIdentifiers
-import ImageIO
-import Extensions
-import OSLog
 
+import CoreGraphics
+import Foundation
+import Extensions
 
 public enum ImageAlignment {
     case left
@@ -17,11 +15,41 @@ public enum ImageAlignment {
     case right
 }
 
-public enum ImageResizer {
-    public static func resizedData(
-    from imageData: Data,
-    to targetSize: CGSize,
-    alignment: ImageAlignment = .center
+public enum ImageBackground {
+    case transparent
+    case white
+    case black
+    case color(CGColor)
+
+    internal var cgColor: CGColor? {
+        switch self {
+        case .transparent:
+            nil
+
+        case .white:
+            CGColor(
+                gray: 1,
+                alpha: 1
+            )
+
+        case .black:
+            CGColor(
+                gray: 0,
+                alpha: 1
+            )
+
+        case .color(let color):
+            color
+        }
+    }
+}
+
+enum ImageResizer {
+    static func resizedData(
+        from imageData: Data,
+        to targetSize: CGSize,
+        alignment: ImageAlignment = .center,
+        background: ImageBackground = .white
     ) -> Data? {
         guard
             let imageType = imageData.imageType,
@@ -29,7 +57,8 @@ public enum ImageResizer {
             let resizedCGImage = resizedCGImage(
                 from: cgImage,
                 toPixelSize: targetSize,
-                alignment: alignment
+                alignment: alignment,
+                background: background
             )
         else {
             return nil
@@ -41,10 +70,11 @@ public enum ImageResizer {
         )
     }
 
-    public static func resizedCGImage(
+    static func resizedCGImage(
         from image: CGImage,
         toPixelSize pixelSize: CGSize,
-        alignment: ImageAlignment
+        alignment: ImageAlignment = .center,
+        background: ImageBackground = .white
     ) -> CGImage? {
         let canvasWidth = Int(pixelSize.width.rounded())
         let canvasHeight = Int(pixelSize.height.rounded())
@@ -80,17 +110,28 @@ public enum ImageResizer {
             xOffset = 0
 
         case .center:
-            xOffset = (canvasSize.width - scaledSize.width) / 2
+            xOffset = (
+                canvasSize.width - scaledSize.width
+            ) / 2
 
         case .right:
             xOffset = canvasSize.width - scaledSize.width
         }
 
+        let yOffset = (
+            canvasSize.height - scaledSize.height
+        ) / 2
+
         let drawingRect = CGRect(
             x: xOffset,
-            y: (canvasSize.height - scaledSize.height) / 2,
+            y: yOffset,
             width: scaledSize.width,
             height: scaledSize.height
+        )
+
+        let canvasRect = CGRect(
+            origin: .zero,
+            size: canvasSize
         )
 
         let colorSpace =
@@ -101,10 +142,13 @@ public enum ImageResizer {
         let bitmapInfo: CGBitmapInfo = [
             .byteOrder32Big,
             CGBitmapInfo(
-                rawValue: CGImageAlphaInfo.premultipliedLast.rawValue
+                rawValue:
+                    CGImageAlphaInfo
+                    .premultipliedLast
+                    .rawValue
             )
         ]
-        
+
         guard let context = CGContext(
             data: nil,
             width: canvasWidth,
@@ -117,9 +161,32 @@ public enum ImageResizer {
             return nil
         }
 
+        draw(
+            background,
+            in: context,
+            canvasRect: canvasRect
+        )
+
         context.interpolationQuality = .high
-        context.draw(image, in: drawingRect)
+        context.draw(
+            image,
+            in: drawingRect
+        )
 
         return context.makeImage()
+    }
+
+    private static func draw(
+        _ background: ImageBackground,
+        in context: CGContext,
+        canvasRect: CGRect
+    ) {
+        guard let backgroundColor = background.cgColor else {
+            context.clear(canvasRect)
+            return
+        }
+
+        context.setFillColor(backgroundColor)
+        context.fill(canvasRect)
     }
 }

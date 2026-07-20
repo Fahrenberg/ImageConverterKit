@@ -36,7 +36,7 @@ extension ImageConverter {
     ///
     /// - Returns: The converted image data, or `nil` if the image could not be
     ///   decoded or encoded.
-    public static func convertData(
+    static func convertData(
         from imageData: Data,
         type: UTType,
         quality: CGFloat? = nil
@@ -68,7 +68,7 @@ extension ImageConverter {
     ///
     /// - Returns: The converted image data, or `nil` if the image could not be
     ///   decoded or encoded.
-    public static func convertData(
+    static func convertData(
         from cgImage: CGImage,
         type: UTType,
         quality: CGFloat? = nil
