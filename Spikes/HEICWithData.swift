@@ -10,7 +10,7 @@ import Foundation
 import UniformTypeIdentifiers
 import ImageIO
 import Extensions
-import ImageCompressionKit
+import ImageConverterKit
 
 
 

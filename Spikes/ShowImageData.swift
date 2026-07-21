@@ -12,7 +12,7 @@ import AVFoundation
 import CoreGraphics
 import UniformTypeIdentifiers
 import Playgrounds
-import ImageCompressionKit
+import ImageConverterKit
 
 
 import Extensions
